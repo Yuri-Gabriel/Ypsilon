@@ -1,13 +1,49 @@
-#include "data_struct/queue.h"
+#include <string.h>
 
-int main() {
-    struct Queue* queue = create_queue();
-    push(queue, "1");
-    push(queue, "2");
-    push(queue, "3");
-    push(queue, "4");
-    push(queue, "5");
+#include "lex/lex.h"
 
-    struct Node* first = pop(queue);
+bool endsWith(const char* text, const char* suffix) {
+
+    size_t text_len = strlen(text);
+    size_t suffix_len = strlen(suffix);
+
+    if(suffix_len > text_len)
+        return false;
+
+    return strcmp(
+        text + text_len - suffix_len,
+        suffix
+    ) == 0;
+}
+
+char* read_file(const char* file_path) {
+    if(!endsWith(file_path, ".y")) return NULL;
+
+    FILE* file = fopen(file_path, "r");
+
+    if (file == NULL) {
+        printf("Erro ao abrir o arquivo!\n");
+        return NULL;
+    }
+
+    char line[100];
+    char* content = malloc(10000);
+    content[0] = '\0';
+
+    while (fgets(line, 100, file) != NULL) {
+        strcat(content, line);
+    }
+
+    fclose(file);
+
+    return content;
+}
+
+int main(int argc, char *argv[]) {
+    char* content = read_file(argv[1]);
+
+    tokenize(content);
+
+    free(content);
     return 0;
 }

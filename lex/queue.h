@@ -1,7 +1,11 @@
+#pragma once
+
 #include <stdlib.h>
 
+#include "token/token.h"
+
 struct Node {
-    char* value;
+    struct Token* value;
     struct Node* prev;
 };
 
@@ -9,7 +13,7 @@ struct Queue {
     struct Node* first;
 };
 
-struct Node* create_node(char* value) {
+struct Node* create_node(struct Token* value) {
     struct Node* node = (struct Node*) malloc(sizeof(struct Node));
 
     if (node == NULL) {
@@ -34,7 +38,7 @@ struct Queue* create_queue() {
     return queue;
 }
 
-void push(struct Queue* queue, char* value) {
+void push(struct Queue* queue, struct Token* value) {
     if (queue->first == NULL) {
         queue->first = create_node(value);
         return;

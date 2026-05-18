@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
@@ -5,7 +7,7 @@
 
 #include "token/token.h"
 #include "token/token_types.h"
-#include "../data_struct/queue.h"
+#include "queue.h"
 
 char identifiers[] = {
     '=', '+', '-', '*', '/'
@@ -33,9 +35,9 @@ bool isLiteral(const char* text) {
 }
 
 bool isIdentifier(const char* text) {
-
-    for(char i = 0; i < strlen(text); i++) {
-        if(text == identifiers[i]) return true;
+    printf("%s", text);
+    for(char i = 0; i < sizeof(identifiers); i++) {
+        //if(text == identifiers[i]) return true;
     }
 
     return false;
@@ -80,7 +82,7 @@ struct Queue* tokenize(char* expr_str) {
 
         struct Token* token = create_token(buff, type);
 
-        push(queue, token)
+        push(tokens, token);
     }
 
     return tokens;

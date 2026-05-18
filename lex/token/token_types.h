@@ -1,3 +1,4 @@
+#pragma once
 
 #define KEYWORD     0x01
 #define IDENTIFIER  0x02

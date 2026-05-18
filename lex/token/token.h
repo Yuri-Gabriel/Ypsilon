@@ -1,4 +1,6 @@
-#include "stdlib.h"
+#pragma once
+
+#include <stdlib.h>
 #include "string.h"
 
 struct Token {

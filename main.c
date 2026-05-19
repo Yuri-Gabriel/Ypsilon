@@ -1,6 +1,7 @@
 #include <string.h>
 
 #include "lex/lex.h"
+#include "lex/queue.h"
 
 bool endsWith(const char* text, const char* suffix) {
 
@@ -39,10 +40,15 @@ char* read_file(const char* file_path) {
     return content;
 }
 
+void print(struct Node* node) {
+}
+
 int main(int argc, char *argv[]) {
     char* content = read_file(argv[1]);
 
-    tokenize(content);
+    struct Queue* tokens = tokenize(content);
+
+    forEach(tokens, print);
 
     free(content);
     return 0;

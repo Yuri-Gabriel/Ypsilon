@@ -60,3 +60,25 @@ struct Node* pop(struct Queue* queue) {
     queue->first = queue->first->prev;
     return node;
 }
+
+int size(struct Queue* queue) {
+    int cont = 0;
+
+    struct Node* current = queue->first;
+
+    while(current != NULL) {
+        cont++;
+        current = current->prev;
+    }
+
+    return cont;
+}
+
+void forEach(struct Queue* queue, void (*func)(struct Node* node)) {
+    struct Node* current = queue->first;
+
+    while(current != NULL) {
+        func(current);
+        current = current->prev;
+    }
+}

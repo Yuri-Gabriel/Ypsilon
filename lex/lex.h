@@ -40,49 +40,27 @@ struct Queue* tokenize(char* expr_str) {
 
         if(isEmpty(current_character))
             continue;
-        printf("-----------------------------\ncurrent_character: %s\n", &current_character);
+
         while(!isEmpty(current_character)
             && char_index <= expr_length
         ) {
-
-            char current_string[2];
-
-            current_string[0] = current_character;
-            current_string[1] = '\0';
-
-            if(!isPunctuator(current_string)) {
-
-                buff[buff_index++] = current_character;
-
-                current_character = consume();
-
-                printf("current_character: %c\n", current_character);
-
-                continue;
-            }
-
-            current_character = '\0';
+            buff[buff_index++] = current_character;
+            current_character = consume();
         } 
 
         buff[buff_index] = '\0';
         trim(buff);
 
-
-        printf("Buffer: %s \n", buff);
-        char type = 0;
-        if(isLiteral(buff)) {
-            type = LITERAL;
-        } else if(isOperator(buff)) {
-            type = OPERATOR;
-        } else if(isKeyword(buff)) {
-            type = KEYWORD;
-        } else if(isPunctuator(buff)) {
-            type = PUNCTUATOR;
-        } else {
-            type = IDENTIFIER;
+        printf("---------------\nBuffer: %s \n", buff);
+        char type = getType(buff);
+        printf("Type: %d\n", type);
+        if(type == 0) {
+            char message[512];
+            sprintf(message, "Unidentified token '%s'", buff);
+            throwError(message, 0);
         }
 
-        printf("Type: %d\n", type);
+        
 
         struct Token* token = create_token(buff, type);
 

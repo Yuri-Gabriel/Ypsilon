@@ -1,1 +1,1 @@
-let numero = 1234 + 1;
+let numero = 1234 + 1 + 3.14;

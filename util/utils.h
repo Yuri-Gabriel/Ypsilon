@@ -53,3 +53,9 @@ bool inStringArray(char* array[], int arraySize, const char* value) {
 
     return false;
 }
+
+void throwError(char* message, int code) {
+    printf("\nError: %s", message);
+    printf("\nError code: %d\n", code);
+    exit(0);
+}

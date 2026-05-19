@@ -86,7 +86,7 @@ char punctuators[] = {
 };
 
 bool isPunctuator(char* text) {
-    if(isEmpty(*text) || strlen(text) > 1) {
+    if(isEmpty(*text)) {
         return false;
     }
 

@@ -44,8 +44,13 @@ struct Queue* tokenize(char* expr_str) {
         while(!isEmpty(current_character)
             && char_index <= expr_length
         ) {
-            buff[buff_index++] = current_character;
-            current_character = consume();
+            if(!isPunctuator(&current_character)) {
+                buff[buff_index++] = current_character;
+                current_character = consume();
+                continue;
+            }
+            char_index--;
+            current_character = '\0';
         } 
 
         buff[buff_index] = '\0';
@@ -54,13 +59,12 @@ struct Queue* tokenize(char* expr_str) {
         printf("---------------\nBuffer: %s \n", buff);
         char type = getType(buff);
         printf("Type: %d\n", type);
-        if(type == 0) {
+
+        if(type == UNKNOWN) {
             char message[512];
             sprintf(message, "Unidentified token '%s'", buff);
             throwError(message, 0);
         }
-
-        
 
         struct Token* token = create_token(buff, type);
 

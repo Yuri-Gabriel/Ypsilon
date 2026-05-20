@@ -82,3 +82,7 @@ void forEach(struct Queue* queue, void (*func)(struct Node* node)) {
         current = current->prev;
     }
 }
+
+void printTokens(struct Node* node) {
+    printf("\n{ value: '%s' | type: %s }\n", node->value->value, getTypeName(node->value->type));
+}

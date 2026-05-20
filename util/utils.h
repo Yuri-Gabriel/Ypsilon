@@ -34,13 +34,15 @@ bool isEmpty(char c) {
     return c == '\0' || isspace(c);
 }
 
-bool inCharArray(char array[], int arraySize, const char* value) {
-    if(isEmpty(*value)) return false;
+bool inCharArray(char array[], int arraySize, char value) {
+    if(isEmpty(value)) return false;
 
     for(int i = 0; i < arraySize; i++) {
-        if(value[0] == array[i]) return true;
+        if(value == array[i]) {
+            return true;
+        }
     }
-
+    
     return false;
 }
 
@@ -54,8 +56,23 @@ bool inStringArray(char* array[], int arraySize, const char* value) {
     return false;
 }
 
+bool endsWith(const char* text, const char* suffix) {
+
+    size_t text_len = strlen(text);
+    size_t suffix_len = strlen(suffix);
+
+    if(suffix_len > text_len)
+        return false;
+
+    return strcmp(
+        text + text_len - suffix_len,
+        suffix
+    ) == 0;
+}
+
 void throwError(char* message, int code) {
     printf("\nError: %s", message);
     printf("\nError code: %d\n", code);
     exit(0);
 }
+

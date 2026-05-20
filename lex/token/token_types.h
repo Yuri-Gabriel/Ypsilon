@@ -15,15 +15,14 @@
 #define OPERATOR    0x03
 #define LITERAL     0x04
 #define PUNCTUATOR  0x05
+#define TYPE        0x06
 
 // KEYWORD
 char* keywords[] = {
-    "let"
+    "while", "for", "if", "else", "elif"
 };
 
 bool isKeyword(char* text) {
-    if(isEmpty(*text)) return false;
-
     return inStringArray(keywords, ARRAY_SIZE(keywords), text);
 }
 
@@ -48,12 +47,10 @@ bool isIdentifier(const char* buff) {
 
 // OPERATOR
 char operators[] = {
-    '=', '+', '-', '*', '/'
+    '=', '+', '-', '*', '/', '<', '>'
 };
 
-bool isOperator(char* text) {
-    if(isEmpty(*text) || strlen(text) > 1) return false;
-
+bool isOperator(char text) {
     return inCharArray(operators, ARRAY_SIZE(operators), text);
 }
 
@@ -85,25 +82,58 @@ char punctuators[] = {
     ';', '(', ')', '{', '}', '[', ']'
 };
 
-bool isPunctuator(char* text) {
-    if(isEmpty(*text)) {
-        return false;
-    }
-
+bool isPunctuator(char text) {
     return inCharArray(punctuators, ARRAY_SIZE(punctuators), text);
+}
+
+//TYPE
+
+char* types[] = {
+    "int", "float", "string", "char"
+};
+
+bool isType(char* text) {
+    return inStringArray(types, ARRAY_SIZE(types), text);
 }
 
 // -----------------------------
 
 char getType(char* buff) {
-    if (isOperator(buff)) return OPERATOR;
-    if (isPunctuator(buff)) return PUNCTUATOR;
+    if (isOperator(*buff)) return OPERATOR;
+    if (isPunctuator(*buff)) return PUNCTUATOR;
     if (isLiteral(buff)) return LITERAL;
 
     if (isIdentifier(buff)) {
+        if (isType(buff)) return TYPE;
         if (isKeyword(buff)) return KEYWORD;
         return IDENTIFIER;
     }
 
     return UNKNOWN;
+}
+
+const char* getTypeName(char type) {
+    switch (type) {
+        case OPERATOR:
+            return "OPERATOR";
+            break;
+        case PUNCTUATOR:
+            return "PUNCTUATOR";
+            break;
+        case LITERAL:
+            return "LITERAL";
+            break;
+        case TYPE:
+            return "TYPE";
+            break;
+        case KEYWORD:
+            return "KEYWORD";
+            break;
+        case IDENTIFIER:
+            return "IDENTIFIER";
+            break;
+        default:
+            return "UNKNOWN";
+            break;
+    }
 }

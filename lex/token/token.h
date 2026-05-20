@@ -16,11 +16,9 @@ struct Token* create_token(char* value, unsigned char type) {
 
     struct Token* token = (struct Token*) malloc(sizeof(struct Token));
 
-    token->value = strdup(value);
+    token->value = malloc(strlen(value) + 1);
+    strcpy(token->value, value);
     token->type = type;
-
-    free(token->value);
-    free(token);
 
     return token;
 }

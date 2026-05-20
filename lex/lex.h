@@ -18,12 +18,15 @@ unsigned long char_index = 0;
 
 char expr[1024];
 
+char peek() {
+    return expr[char_index];
+}
+
 char consume() {
     return expr[char_index++];
 }
 
 struct Queue* tokenize(char* expr_str) {
-
     tokens = create_queue();
 
     strcpy(expr, expr_str);
@@ -36,33 +39,45 @@ struct Queue* tokenize(char* expr_str) {
         char buff[256];
         int buff_index = 0;
 
-        char current_character = consume();
+        char current_character = peek();
 
-        if(isEmpty(current_character))
+        if(isEmpty(current_character)) {
+            consume();
             continue;
+        }
 
-        while(!isEmpty(current_character)
-            && char_index <= expr_length
+        if(isOperator(current_character)
+            || isPunctuator(current_character)
         ) {
-            if(!isPunctuator(&current_character)) {
-                buff[buff_index++] = current_character;
-                current_character = consume();
-                continue;
+            buff[buff_index++] = consume();
+        } else {
+            while(char_index < expr_length) {
+                current_character = peek();
+
+                if(isEmpty(current_character)
+                    || isOperator(current_character)
+                    || isPunctuator(current_character)
+                ) {
+                    break;
+                }
+
+                buff[buff_index++] = consume();
             }
-            char_index--;
-            current_character = '\0';
-        } 
+        }
 
         buff[buff_index] = '\0';
+
         trim(buff);
 
-        printf("---------------\nBuffer: %s \n", buff);
         char type = getType(buff);
-        printf("Type: %d\n", type);
 
         if(type == UNKNOWN) {
             char message[512];
-            sprintf(message, "Unidentified token '%s'", buff);
+            sprintf(
+                message,
+                "Unidentified token '%s'",
+                buff
+            );
             throwError(message, 0);
         }
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
@@ -11,48 +12,52 @@
 
 #include "../util/utils.h"
 
-struct Queue* tokens;
+struct Lex {
+    struct Queue* tokens;
 
-unsigned long expr_length;
-unsigned long char_index = 0;
+    unsigned long expr_length;
+    unsigned long char_index;
 
-char expr[1024];
+    char expr[1024];
+};
 
-char peek() {
-    return expr[char_index];
+char peek(struct Lex* l) {
+    return l->expr[l->char_index];
 }
 
-char consume() {
-    return expr[char_index++];
+char consume(struct Lex* l) {
+    return l->expr[l->char_index++];
 }
 
 struct Queue* tokenize(char* expr_str) {
-    tokens = create_queue();
+    struct Lex* lex = (struct Lex*) malloc(sizeof(struct Lex));
 
-    strcpy(expr, expr_str);
+    lex->tokens = create_queue();
 
-    expr_length = strlen(expr);
-    char_index = 0;
+    strcpy(lex->expr, expr_str);
 
-    while(char_index < expr_length) {
+    lex->expr_length = strlen(lex->expr);
+    lex->char_index = 0;
+
+    while(lex->char_index < lex->expr_length) {
 
         char buff[256];
         int buff_index = 0;
 
-        char current_character = peek();
+        char current_character = peek(lex);
 
         if(isEmpty(current_character)) {
-            consume();
+            consume(lex);
             continue;
         }
 
         if(isOperator(current_character)
             || isPunctuator(current_character)
         ) {
-            buff[buff_index++] = consume();
+            buff[buff_index++] = consume(lex);
         } else {
-            while(char_index < expr_length) {
-                current_character = peek();
+            while(lex->char_index < lex->expr_length) {
+                current_character = peek(lex);
 
                 if(isEmpty(current_character)
                     || isOperator(current_character)
@@ -61,7 +66,7 @@ struct Queue* tokenize(char* expr_str) {
                     break;
                 }
 
-                buff[buff_index++] = consume();
+                buff[buff_index++] = consume(lex);
             }
         }
 
@@ -83,8 +88,8 @@ struct Queue* tokenize(char* expr_str) {
 
         struct Token* token = create_token(buff, type);
 
-        push(tokens, token);
+        push(lex->tokens, token);
     }
 
-    return tokens;
+    return lex->tokens;
 }

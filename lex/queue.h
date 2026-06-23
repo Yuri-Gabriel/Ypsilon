@@ -4,17 +4,17 @@
 
 #include "token/token.h"
 
-struct Node {
-    struct Token* value;
+typedef struct Node {
+    Token* value;
     struct Node* prev;
-};
+} Node;
 
-struct Queue {
-    struct Node* first;
-};
+typedef struct {
+    Node* first;
+} Queue;
 
-struct Node* create_node(struct Token* value) {
-    struct Node* node = (struct Node*) malloc(sizeof(struct Node));
+Node* create_node(Token* value) {
+    Node* node = (Node*) malloc(sizeof(Node));
 
     if (node == NULL) {
         return NULL;
@@ -26,8 +26,8 @@ struct Node* create_node(struct Token* value) {
     return node;
 }
 
-struct Queue* create_queue() {
-    struct Queue* queue = (struct Queue*) malloc(sizeof(struct Queue));
+Queue* create_queue() {
+    Queue* queue = (Queue*) malloc(sizeof(Queue));
 
     if (queue == NULL) {
         return NULL;
@@ -38,13 +38,13 @@ struct Queue* create_queue() {
     return queue;
 }
 
-void push(struct Queue* queue, struct Token* value) {
+void push(Queue* queue, Token* value) {
     if (queue->first == NULL) {
         queue->first = create_node(value);
         return;
     }
 
-    struct Node* current_node = queue->first;
+    Node* current_node = queue->first;
 
     while (current_node->prev != NULL) {
         current_node = current_node->prev;
@@ -53,18 +53,18 @@ void push(struct Queue* queue, struct Token* value) {
     current_node->prev = create_node(value);
 }
 
-struct Node* pop(struct Queue* queue) {
+Node* pop(Queue* queue) {
     if(queue->first == NULL) return NULL;
 
-    struct Node* node = queue->first;
+    Node* node = queue->first;
     queue->first = queue->first->prev;
     return node;
 }
 
-int size(struct Queue* queue) {
+int size(Queue* queue) {
     int cont = 0;
 
-    struct Node* current = queue->first;
+    Node* current = queue->first;
 
     while(current != NULL) {
         cont++;
@@ -74,8 +74,8 @@ int size(struct Queue* queue) {
     return cont;
 }
 
-void forEach(struct Queue* queue, void (*func)(struct Node* node)) {
-    struct Node* current = queue->first;
+void forEach(Queue* queue, void (*func)(Node* node)) {
+    Node* current = queue->first;
 
     while(current != NULL) {
         func(current);
@@ -83,6 +83,6 @@ void forEach(struct Queue* queue, void (*func)(struct Node* node)) {
     }
 }
 
-void printTokens(struct Node* node) {
+void printTokens(Node* node) {
     printf("\n{ value: '%s' | type: %s }\n", node->value->value, getTypeName(node->value->type));
 }

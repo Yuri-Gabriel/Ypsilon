@@ -3,18 +3,18 @@
 #include <stdlib.h>
 #include "string.h"
 
-struct Token {
+typedef struct {
     char* value;
     unsigned char type;
-};
+} Token;
 
-struct Token* create_token(char* value, unsigned char type) {
+Token* create_token(char* value, unsigned char type) {
 
     if(value == NULL) {
         return NULL;
     }
 
-    struct Token* token = (struct Token*) malloc(sizeof(struct Token));
+    Token* token = (Token*) malloc(sizeof(Token));
 
     token->value = malloc(strlen(value) + 1);
     strcpy(token->value, value);

@@ -12,25 +12,25 @@
 
 #include "../util/utils.h"
 
-struct Lex {
-    struct Queue* tokens;
+typedef struct {
+    Queue* tokens;
 
     unsigned long expr_length;
     unsigned long char_index;
 
     char expr[1024];
-};
+} Lex;
 
-char peek(struct Lex* l) {
+char peek(Lex* l) {
     return l->expr[l->char_index];
 }
 
-char consume(struct Lex* l) {
+char consume(Lex* l) {
     return l->expr[l->char_index++];
 }
 
-struct Queue* tokenize(char* expr_str) {
-    struct Lex* lex = (struct Lex*) malloc(sizeof(struct Lex));
+Queue* tokenize(char* expr_str) {
+    Lex* lex = (Lex*) malloc(sizeof(Lex));
 
     lex->tokens = create_queue();
 
@@ -51,7 +51,7 @@ struct Queue* tokenize(char* expr_str) {
             continue;
         }
 
-        if(isOperator(current_character)
+        if(isOperator(&current_character)
             || isPunctuator(current_character)
         ) {
             buff[buff_index++] = consume(lex);
@@ -60,7 +60,7 @@ struct Queue* tokenize(char* expr_str) {
                 current_character = peek(lex);
 
                 if(isEmpty(current_character)
-                    || isOperator(current_character)
+                    || isOperator(&current_character)
                     || isPunctuator(current_character)
                 ) {
                     break;
@@ -86,7 +86,7 @@ struct Queue* tokenize(char* expr_str) {
             throwError(message, 0);
         }
 
-        struct Token* token = create_token(buff, type);
+        Token* token = create_token(buff, type);
 
         push(lex->tokens, token);
     }

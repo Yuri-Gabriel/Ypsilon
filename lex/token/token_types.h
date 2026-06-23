@@ -46,12 +46,12 @@ bool isIdentifier(const char* buff) {
 }
 
 // OPERATOR
-char operators[] = {
-    '=', '+', '-', '*', '/', '<', '>'
+char* operators[] = {
+    "=", "+", "-", "*", "/", "^", "<", ">", "!","&&", "==", "!=", "<=", ">=", "+=", "-=", "*=", "/=", "^=", "++", "--"
 };
 
-bool isOperator(char text) {
-    return inCharArray(operators, ARRAY_SIZE(operators), text);
+bool isOperator(char* text) {
+    return inStringArray(operators, ARRAY_SIZE(operators), text);
 }
 
 // LITERAL
@@ -99,7 +99,7 @@ bool isType(char* text) {
 // -----------------------------
 
 char getType(char* buff) {
-    if (isOperator(*buff)) return OPERATOR;
+    if (isOperator(buff)) return OPERATOR;
     if (isPunctuator(*buff)) return PUNCTUATOR;
     if (isLiteral(buff)) return LITERAL;
 

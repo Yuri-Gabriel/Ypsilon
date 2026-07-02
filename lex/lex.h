@@ -18,7 +18,7 @@ typedef struct {
     unsigned long expr_length;
     unsigned long char_index;
 
-    char expr[1024];
+    char expr[0x400];
 } Lex;
 
 char peek(Lex* l) {
@@ -41,7 +41,7 @@ Queue* tokenize(char* expr_str) {
 
     while(lex->char_index < lex->expr_length) {
 
-        char buff[256];
+        char buff[0x100];
         int buff_index = 0;
 
         char current_character = peek(lex);
@@ -77,7 +77,7 @@ Queue* tokenize(char* expr_str) {
         char type = getType(buff);
 
         if(type == UNKNOWN) {
-            char message[512];
+            char message[0x200];
             sprintf(
                 message,
                 "Unidentified token '%s'",

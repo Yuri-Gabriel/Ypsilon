@@ -25,18 +25,16 @@
 #define OP_ARI_MUL                              "*"
 #define OP_ARI_DIV                              "/"
 #define OP_ARI_POW                              "^"
-#define OP_ARI_INC                              "++"
-#define OP_ARI_DEC                              "--"
 
 // Arithmetic Assignment Operators
-#define OP_ARI_SUM                              "+="
-#define OP_ARI_SUB                              "-="
-#define OP_ARI_MUL                              "*="
-#define OP_ARI_DIV                              "/="
-#define OP_ARI_POW                              "^="
+#define OP_ARI_ASN_SUM                          "+="
+#define OP_ARI_ASN_SUB                          "-="
+#define OP_ARI_ASN_MUL                          "*="
+#define OP_ARI_ASN_DIV                          "/="
+#define OP_ARI_ASN_POW                          "^="
 
 // Assignment Operators
-#define OP_ARI_ASN                              "="
+#define OP_ASN                                  "="
 
 // Relational Operators
 #define OP_REL_LT                               "<"

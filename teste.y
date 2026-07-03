@@ -15,3 +15,7 @@ if(is_greater) {
 }
 
 string teste = NULL;
+
+for(number j = 0; j < 10; j += 1) {
+
+}

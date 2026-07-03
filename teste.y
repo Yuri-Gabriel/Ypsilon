@@ -1,6 +1,17 @@
-int numero = (1234 + (1 + 3.14));
+number numero = (1234 + (1 + 3.14));
 
-int i = 0;
+number i = 0;
+string msg = "hello";
 while(i < 10) {
     i += 1;
 }
+
+bool is_greater = 1 > 0;
+
+if(is_greater) {
+    msg = "greater";
+} else {
+    msg = "not greater";
+}
+
+string teste = NULL;

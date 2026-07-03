@@ -19,7 +19,7 @@
 
 // KEYWORD
 char* keywords[] = {
-    "while", "for", "if", "else", "elif"
+    "while", "for", "if", "else", "elif", "break", "continue"
 };
 
 bool isKeyword(char* text) {
@@ -47,7 +47,7 @@ bool isIdentifier(const char* buff) {
 
 // OPERATOR
 char* operators[] = {
-    "=", "+", "-", "*", "/", "^", "<", ">", "!","&&", "==", "!=", "<=", ">=", "+=", "-=", "*=", "/=", "^=", "++", "--"
+    "=", "+", "-", "*", "/", "^", "<", ">", "!","&&", "||", "==", "!=", "<=", ">=", "+=", "-=", "*=", "/=", "^=", "++", "--"
 };
 
 bool isOperator(char* text) {
@@ -58,21 +58,30 @@ bool isOperator(char* text) {
 bool isLiteral(const char *str) {
     char *endptr;
 
-    if (str == NULL || *str == '\0') {
-        return false;
+    if (str == NULL || *str == '\0') return false;
+
+    if (
+        (strcmp(str, "true") == 0 || strcmp(str, "false") == 0)
+        || strcmp(str, "NULL") == 0
+    ) {
+        return true;
+    }
+
+    size_t len = strlen(str);
+    if (len >= 2 && str[0] == '"' && str[len - 1] == '"') {
+        return true;
     }
 
     errno = 0;
 
     strtod(str, &endptr);
     
-    if (endptr == str) {
-        return false;
-    }
-
-    if (*endptr != '\0') {
-        return false;
-    }
+    if (
+        endptr == str 
+        || *endptr != '\0' 
+        || errno == ERANGE
+    ) return false;
+    
 
     return true;
 }
@@ -89,7 +98,7 @@ bool isPunctuator(char text) {
 //TYPE
 
 char* types[] = {
-    "int", "float", "string", "char"
+    "number", "string", "bool", "null"
 };
 
 bool isType(char* text) {

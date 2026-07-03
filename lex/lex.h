@@ -51,11 +51,28 @@ Queue* tokenize(char* expr_str) {
             continue;
         }
 
-        if(isOperator(&current_character)
-            || isPunctuator(current_character)
-        ) {
+        // --- NOVA LÓGICA: Captura de Strings Literais ---
+        if (current_character == '"') {
+            buff[buff_index++] = consume(lex); // Consome a aspa de abertura
+
+            while (lex->char_index < lex->expr_length) {
+                current_character = peek(lex);
+                buff[buff_index++] = consume(lex);
+
+                // Se encontrar a aspa de fechamento, termina a string
+                if (current_character == '"') {
+                    break;
+                }
+            }
+        } 
+        // --- FIM DA NOVA LÓGICA ---
+        
+        // Mantém a lógica existente para Operadores e Pontuadores
+        else if(isOperator(&current_character) || isPunctuator(current_character)) {
             buff[buff_index++] = consume(lex);
-        } else {
+        } 
+        // Mantém a lógica existente para identificadores/números (sem aspas)
+        else {
             while(lex->char_index < lex->expr_length) {
                 current_character = peek(lex);
 
@@ -72,22 +89,20 @@ Queue* tokenize(char* expr_str) {
 
         buff[buff_index] = '\0';
 
-        trim(buff);
+        // Cuidado aqui: dependendo de como o seu trim() funciona, 
+        // ele pode remover espaços de DENTRO da string (ex: "hello world" virar "helloworld").
+        // Se o seu trim() apenas remove espaços nas pontas externas, tudo bem.
+        trim(buff); 
 
         char type = getType(buff);
 
         if(type == UNKNOWN) {
             char message[0x200];
-            sprintf(
-                message,
-                "Unidentified token '%s'",
-                buff
-            );
+            sprintf(message, "Unidentified token '%s'", buff);
             throwError(message, 0);
         }
 
         Token* token = create_token(buff, type);
-
         push(lex->tokens, token);
     }
 

@@ -101,7 +101,7 @@ bool isPunctuator(char text) {
 //TYPE
 
 char* types[] = {
-    "number", "string", "bool", "null"
+    "number", "string", "bool"
 };
 
 bool isType(char* text) {

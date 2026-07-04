@@ -8,110 +8,110 @@ typedef struct Variable {
     unsigned char type;
 } Variable;
 
-typedef struct Node Node;
-typedef struct NodeProg NodeProg;
+typedef struct AstNode AstNode;
+typedef struct AstNodeProg AstNodeProg;
 
-typedef struct NodeStatement NodeStatement;
-typedef struct NodeIfStatement NodeIfStatement;
-typedef struct NodeWhileStatement NodeWhileStatement;
-typedef struct NodeBreakStatement NodeBreakStatement;
-typedef struct NodeContinueStatement NodeContinueStatement;
-typedef struct NodeForStatement NodeForStatement;
-typedef struct NodeBinaryOperationStatement NodeBinaryOperationStatement;
+typedef struct AstNodeStatement AstNodeStatement;
+typedef struct AstNodeIfStatement AstNodeIfStatement;
+typedef struct AstNodeWhileStatement AstNodeWhileStatement;
+typedef struct AstNodeBreakStatement AstNodeBreakStatement;
+typedef struct AstNodeContinueStatement AstNodeContinueStatement;
+typedef struct AstNodeForStatement AstNodeForStatement;
+typedef struct AstNodeBinaryOperationStatement AstNodeBinaryOperationStatement;
 
-typedef struct NodeTerm NodeTerm;
-typedef struct NodeLiteral NodeLiteral;
-typedef struct NodeAssignment NodeAssignment;
+typedef struct AstNodeTerm AstNodeTerm;
+typedef struct AstNodeLiteral AstNodeLiteral;
+typedef struct AstNodeAssignment AstNodeAssignment;
 
-typedef struct NodeCondBinaryRel NodeCondBinaryRel;
-typedef struct NodeCondLogical NodeCondLogical;
-typedef struct NodeCondition NodeCondition;
+typedef struct AstNodeCondBinaryRel AstNodeCondBinaryRel;
+typedef struct AstNodeCondLogical AstNodeCondLogical;
+typedef struct AstNodeCondition AstNodeCondition;
 
 typedef struct {
     char* value;
-} NodeLiteral;
+} AstNodeLiteral;
 
 typedef struct {
-    unsigned char* assignment_operator;
+    char* assignment_operator;
     Variable* var;
-} NodeAssignment;
+} AstNodeAssignment;
 
 typedef struct {
     union {
-        NodeLiteral* literal;
-        NodeAssignment* identifier;
+        AstNodeLiteral* literal;
+        AstNodeAssignment* identifier;
     } value;
-} NodeTerm;
+} AstNodeTerm;
 
 typedef struct {
-    unsigned char* relational_operator;
-    NodeTerm* left;
-    NodeTerm* right;
-} NodeCondBinaryRel;
+    char* relational_operator;
+    AstNodeTerm* left;
+    AstNodeTerm* right;
+} AstNodeCondBinaryRel;
 
 typedef struct {
-    unsigned char* logical_operator;
-    NodeCondition* left;
-    NodeCondition* right;
-} NodeCondLogical;
+    char* logical_operator;
+    AstNodeCondition* left;
+    AstNodeCondition* right;
+} AstNodeCondLogical;
 
 typedef struct {
-    unsigned char* type;
+    char* type;
     union {
-        NodeCondBinaryRel* binary_rel;
-        NodeCondLogical* logical;
+        AstNodeCondBinaryRel* binary_rel;
+        AstNodeCondLogical* logical;
     } as;
-} NodeCondition;
+} AstNodeCondition;
 
 typedef struct {
-    NodeTerm* left;
-    unsigned char* operator;
-    NodeTerm* right;
-} NodeBinaryOperationStatement;
+    char* operator;
+    AstNodeTerm* left;
+    AstNodeTerm* right;
+} AstNodeBinaryOperationStatement;
 
 typedef struct {
-    NodeCondition* condition;
-    NodeStatement* statement;
-    NodeStatement* else_statement;
-} NodeIfStatement;
+    AstNodeCondition* condition;
+    AstNodeStatement* statement;
+    AstNodeStatement* else_statement;
+} AstNodeIfStatement;
 
 typedef struct {
-    NodeCondition* condition;
-    NodeStatement* statement;
-} NodeWhileStatement;
+    AstNodeCondition* condition;
+    AstNodeStatement* statement;
+} AstNodeWhileStatement;
 
 typedef struct {
-} NodeBreakStatement;
+} AstNodeBreakStatement;
 
 typedef struct {
-} NodeContinueStatement;
+} AstNodeContinueStatement;
 
 typedef struct {
-    NodeAssignment* var;
-    NodeWhileStatement* statement;
-} NodeForStatement;
+    AstNodeAssignment* var;
+    AstNodeWhileStatement* statement;
+} AstNodeForStatement;
 
 typedef struct {
     union {
-        NodeBinaryOperationStatement* binary_expression_statement;
-        NodeIfStatement* if_statement;
-        NodeWhileStatement* while_statement;
-        NodeForStatement* for_statement;
-        NodeBreakStatement* break_statement;
-        NodeContinueStatement* continue_statement;
+        AstNodeBinaryOperationStatement* binary_expression_statement;
+        AstNodeIfStatement* if_statement;
+        AstNodeWhileStatement* while_statement;
+        AstNodeForStatement* for_statement;
+        AstNodeBreakStatement* break_statement;
+        AstNodeContinueStatement* continue_statement;
     } as;
-} NodeStatement;
+} AstNodeStatement;
 
 typedef struct {
     unsigned char type;
-    Node* exit_node;
+    AstNode* exit_node;
     union {
-        NodeTerm* term;
-        NodeStatement* statement;
+        AstNodeTerm* term;
+        AstNodeStatement* statement;
     } value;
-} Node;
+} AstNode;
 
 typedef struct {
-    NodeStatement** stmts;
+    AstNodeStatement** stmts;
     int stmts_count;
-} NodeProg;
+} AstNodeProg;

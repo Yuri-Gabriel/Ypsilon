@@ -27,35 +27,35 @@ typedef struct AstNodeCondBinaryRel AstNodeCondBinaryRel;
 typedef struct AstNodeCondLogical AstNodeCondLogical;
 typedef struct AstNodeCondition AstNodeCondition;
 
-typedef struct {
+typedef struct AstNodeLiteral {
     char* value;
 } AstNodeLiteral;
 
-typedef struct {
+typedef struct AstNodeAssignment {
     char* assignment_operator;
     Variable* var;
 } AstNodeAssignment;
 
-typedef struct {
+typedef struct AstNodeTerm {
     union {
         AstNodeLiteral* literal;
         AstNodeAssignment* identifier;
     } value;
 } AstNodeTerm;
 
-typedef struct {
+typedef struct AstNodeCondBinaryRel {
     char* relational_operator;
     AstNodeTerm* left;
     AstNodeTerm* right;
 } AstNodeCondBinaryRel;
 
-typedef struct {
+typedef struct AstNodeCondLogical {
     char* logical_operator;
     AstNodeCondition* left;
     AstNodeCondition* right;
 } AstNodeCondLogical;
 
-typedef struct {
+typedef struct AstNodeCondition {
     char* type;
     union {
         AstNodeCondBinaryRel* binary_rel;
@@ -63,35 +63,35 @@ typedef struct {
     } as;
 } AstNodeCondition;
 
-typedef struct {
-    char* operator;
+typedef struct AstNodeBinaryOperationStatement {
+    char* op;
     AstNodeTerm* left;
     AstNodeTerm* right;
 } AstNodeBinaryOperationStatement;
 
-typedef struct {
+typedef struct AstNodeIfStatement {
     AstNodeCondition* condition;
     AstNodeStatement* statement;
     AstNodeStatement* else_statement;
 } AstNodeIfStatement;
 
-typedef struct {
+typedef struct AstNodeWhileStatement {
     AstNodeCondition* condition;
     AstNodeStatement* statement;
 } AstNodeWhileStatement;
 
-typedef struct {
+typedef struct AstNodeBreakStatement {
 } AstNodeBreakStatement;
 
-typedef struct {
+typedef struct AstNodeContinueStatement {
 } AstNodeContinueStatement;
 
-typedef struct {
+typedef struct AstNodeForStatement {
     AstNodeAssignment* var;
     AstNodeWhileStatement* statement;
 } AstNodeForStatement;
 
-typedef struct {
+typedef struct AstNodeStatement {
     union {
         AstNodeBinaryOperationStatement* binary_expression_statement;
         AstNodeIfStatement* if_statement;
@@ -102,7 +102,7 @@ typedef struct {
     } as;
 } AstNodeStatement;
 
-typedef struct {
+typedef struct AstNode {
     unsigned char type;
     AstNode* exit_node;
     union {
@@ -111,7 +111,7 @@ typedef struct {
     } value;
 } AstNode;
 
-typedef struct {
-    AstNodeStatement** stmts;
+typedef struct AstNodeProg {
+    AstNodeStatement* stmts;
     int stmts_count;
 } AstNodeProg;

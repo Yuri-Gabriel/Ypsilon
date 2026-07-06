@@ -1,6 +1,10 @@
 
 #include "lex/lex.h"
 #include "lex/queue.h"
+
+#include "sem/sem_types.h"
+#include "sem/sem.h"
+
 #include "util/file_reader.h"
 
 int main(int argc, char *argv[]) {
@@ -15,12 +19,10 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "Nao foi possivel ler o arquivo '%s'.\n", argv[1]);
         return 1;
     }
-
+    printf("1\n");
     Queue* tokens = tokenize(content);
-
-    forEach(tokens, printTokens);
-
-    free(content);
+    printf("2\n");
+    AstNodeProg* prog = analyze(tokens);
 
     return 0;
 }

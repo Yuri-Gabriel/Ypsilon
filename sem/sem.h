@@ -6,73 +6,133 @@
 #include "sem_types.h"
 #include "sem_const_types.h"
 
-Node* current_node = NULL;
+typedef struct Sem Sem;
 
-Token* peek() {
-    return  current_node->value;
+Token* peekToken();
+Token* consumeToken();
+AstNodeProg* analyze(Queue* queue);
+AstNodeProg* build_ast_program();
+AstNodeStatement* build_ast_statement();
+AstNodeTerm* build_ast_term();
+AstNodeLiteral* build_ast_literal();
+AstNodeAssignment* build_ast_assignment();
+
+Queue* queue = NULL;
+
+Token* peekToken() {
+    return queue->first->value;
 }
 
-void consume() {
-    current_node = current_node->prev;
+Token* consumeToken() {
+    queue->first = queue->first->prev;
+    return queue->first->value;
 }
 
-AstNodeProg* analyze(Queue* queue) {
-    current_node = queue->first;
-    AstNodeProg* ast_program = build_ast_program();
-
-    return ast_program;
+AstNodeProg* analyze(Queue* tokens) {
+    queue = tokens;
+    printf("3\n");
+    return build_ast_program();
 }
 
 
 AstNodeProg* build_ast_program() {
+    printf("3\n");
     AstNodeStatement* statement = build_ast_statement();
+    printf("7\n");
+
+    if(statement == NULL) return NULL;
+
+    AstNodeProg* prog = (AstNodeProg*) malloc(sizeof(AstNodeProg));
+
+    prog->stmts = statement; 
+    
+    return prog;
     
 }
 
 AstNodeStatement* build_ast_statement() {
+    printf("4\n");
     AstNodeTerm* term = build_ast_term();
+    printf("6\n");
+    if(term == NULL) return NULL;
+
+    AstNodeStatement* stmt = (AstNodeStatement*) malloc(sizeof(AstNodeStatement));
+    stmt->as.binary_expression_statement = (AstNodeBinaryOperationStatement*) malloc(sizeof(AstNodeBinaryOperationStatement));
+
+    stmt->as.binary_expression_statement->left = term;
+
+    return stmt;
 }
 
 AstNodeTerm* build_ast_term() {
-    Token* token = peek();
+    printf("5\n");
+    Token* token = peekToken();
 
-    if (token->type == LITERAL) {
-        AstNodeLiteral* literal = build_ast_literal();
-        return (AstNodeTerm*) literal;
+    AstNodeTerm* term = (AstNodeTerm*) malloc((sizeof(AstNodeTerm)));
+    if (token->type == LITERAL || token->type == OPERATOR) {
+         if (token->type == OPERATOR) {
+            consumeToken();
+        }
+        term->value.literal = build_ast_literal();
     } else if (token->type == TYPE) {
-        AstNodeAssignment* assignment = build_ast_assignment();
-        return (AstNodeTerm*) assignment;
+        term->value.identifier = build_ast_assignment();
     }
 
-    return NULL;
+    return term;
 }
 
 AstNodeLiteral* build_ast_literal() {
-    Token* token = peek();
+    printf("5.1\n");
+    Token* token = peekToken();
+
     AstNodeLiteral* literal = (AstNodeLiteral*) malloc(sizeof(AstNodeLiteral));
+
     literal->value = strdup(token->value);
 
-    consume();
+    consumeToken();
 
     return literal;
 }
 
 AstNodeAssignment* build_ast_assignment() {
-    Token* token = peek();
+    printf("5.2\n");
+    Token* token = peekToken();
+    
     AstNodeAssignment* assignment = (AstNodeAssignment*) malloc(sizeof(AstNodeAssignment));
+
     assignment->var = (Variable*) malloc(sizeof(Variable));
+
+    int var_type = 0;
+    if(strcmp(token->value, "number")) {
+        var_type = VAR_TYPE_NUMBER;
+    } else if(strcmp(token->value, "bool")) {
+        var_type = VAR_TYPE_BOOL;
+    } else if(strcmp(token->value, "string")) {
+        var_type = VAR_TYPE_STRING;
+    } else {
+        char message[0x200];
+        sprintf(message, "Unidentified type '%s'", getTypeName(token->type));
+        throwError(message, 0);
+    }
+
+    assignment->var->type = var_type;
+
+    consumeToken();
+
     assignment->var->alias = strdup(token->value);
 
+    consumeToken();
 
-    consume();
+    token = peekToken();
 
-    token = peek();
     assignment->assignment_operator = strdup(token->value);
 
-    consume();
+    consumeToken();
 
     AstNodeTerm* term = build_ast_term();
+    
     assignment->var->value = strdup(term->value.literal->value);
+
     assignment->var->type = getType(term->value.literal->value);
 
     return assignment;

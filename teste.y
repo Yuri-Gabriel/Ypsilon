@@ -1,5 +1,3 @@
-number numero = (1234 + (1 + 3.14));
-
 number i = 0;
 string msg = "hello";
 while(i < 10) {

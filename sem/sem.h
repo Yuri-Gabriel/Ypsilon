@@ -24,21 +24,19 @@ Token* peekToken() {
 }
 
 Token* consumeToken() {
+    printf("%s\n", queue->first->value->value);
     queue->first = queue->first->prev;
     return queue->first->value;
 }
 
 AstNodeProg* analyze(Queue* tokens) {
     queue = tokens;
-    printf("3\n");
     return build_ast_program();
 }
 
 
 AstNodeProg* build_ast_program() {
-    printf("3\n");
     AstNodeStatement* statement = build_ast_statement();
-    printf("7\n");
 
     if(statement == NULL) return NULL;
 
@@ -51,9 +49,8 @@ AstNodeProg* build_ast_program() {
 }
 
 AstNodeStatement* build_ast_statement() {
-    printf("4\n");
     AstNodeTerm* term = build_ast_term();
-    printf("6\n");
+
     if(term == NULL) return NULL;
 
     AstNodeStatement* stmt = (AstNodeStatement*) malloc(sizeof(AstNodeStatement));
@@ -65,12 +62,11 @@ AstNodeStatement* build_ast_statement() {
 }
 
 AstNodeTerm* build_ast_term() {
-    printf("5\n");
     Token* token = peekToken();
 
     AstNodeTerm* term = (AstNodeTerm*) malloc((sizeof(AstNodeTerm)));
     if (token->type == LITERAL || token->type == OPERATOR) {
-         if (token->type == OPERATOR) {
+        if (token->type == OPERATOR) {
             consumeToken();
         }
         term->value.literal = build_ast_literal();
@@ -82,7 +78,6 @@ AstNodeTerm* build_ast_term() {
 }
 
 AstNodeLiteral* build_ast_literal() {
-    printf("5.1\n");
     Token* token = peekToken();
 
     AstNodeLiteral* literal = (AstNodeLiteral*) malloc(sizeof(AstNodeLiteral));
@@ -95,7 +90,6 @@ AstNodeLiteral* build_ast_literal() {
 }
 
 AstNodeAssignment* build_ast_assignment() {
-    printf("5.2\n");
     Token* token = peekToken();
     
     AstNodeAssignment* assignment = (AstNodeAssignment*) malloc(sizeof(AstNodeAssignment));
@@ -132,8 +126,6 @@ AstNodeAssignment* build_ast_assignment() {
     AstNodeTerm* term = build_ast_term();
     
     assignment->var->value = strdup(term->value.literal->value);
-
-    assignment->var->type = getType(term->value.literal->value);
 
     return assignment;
 }

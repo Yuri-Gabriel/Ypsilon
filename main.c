@@ -19,9 +19,9 @@ int main(int argc, char *argv[]) {
         fprintf(stderr, "Nao foi possivel ler o arquivo '%s'.\n", argv[1]);
         return 1;
     }
-    printf("1\n");
+
     Queue* tokens = tokenize(content);
-    printf("2\n");
+    // forEach(tokens, printTokens);
     AstNodeProg* prog = analyze(tokens);
 
     return 0;

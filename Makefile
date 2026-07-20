@@ -1,5 +1,5 @@
 all: 
-	gcc -g main.c -o main
+	gcc -g src/main.c -o output/main
 
 run:
-	./main ./teste.y
+	output/main samples/teste.y

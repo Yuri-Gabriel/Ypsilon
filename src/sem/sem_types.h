@@ -21,7 +21,7 @@ typedef struct AstNodeBinaryOperationStatement AstNodeBinaryOperationStatement;
 
 typedef struct AstNodeTerm AstNodeTerm;
 typedef struct AstNodeLiteral AstNodeLiteral;
-typedef struct AstNodeAssignment AstNodeAssignment;
+typedef struct AstNodeAssignmentStatement AstNodeAssignmentStatement;
 
 typedef struct AstNodeCondBinaryRel AstNodeCondBinaryRel;
 typedef struct AstNodeCondLogical AstNodeCondLogical;
@@ -31,15 +31,15 @@ typedef struct AstNodeLiteral {
     char* value;
 } AstNodeLiteral;
 
-typedef struct AstNodeAssignment {
+typedef struct AstNodeAssignmentStatement {
     char* assignment_operator;
     Variable* var;
-} AstNodeAssignment;
+} AstNodeAssignmentStatement;
 
 typedef struct AstNodeTerm {
     union {
         AstNodeLiteral* literal;
-        AstNodeAssignment* identifier;
+        AstNodeAssignmentStatement* identifier;
     } value;
 } AstNodeTerm;
 
@@ -87,7 +87,7 @@ typedef struct AstNodeContinueStatement {
 } AstNodeContinueStatement;
 
 typedef struct AstNodeForStatement {
-    AstNodeAssignment* var;
+    AstNodeAssignmentStatement* var;
     AstNodeWhileStatement* statement;
 } AstNodeForStatement;
 
@@ -99,6 +99,7 @@ typedef struct AstNodeStatement {
         AstNodeForStatement* for_statement;
         AstNodeBreakStatement* break_statement;
         AstNodeContinueStatement* continue_statement;
+        AstNodeAssignmentStatement* assigment_statement;
     } as;
 } AstNodeStatement;
 

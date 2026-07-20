@@ -15,7 +15,7 @@ AstNodeProg* build_ast_program();
 AstNodeStatement* build_ast_statement();
 AstNodeTerm* build_ast_term();
 AstNodeLiteral* build_ast_literal();
-AstNodeAssignment* build_ast_assignment();
+AstNodeAssignmentStatement* build_ast_assignment();
 
 Queue* queue = NULL;
 
@@ -54,9 +54,9 @@ AstNodeStatement* build_ast_statement() {
     if(term == NULL) return NULL;
 
     AstNodeStatement* stmt = (AstNodeStatement*) malloc(sizeof(AstNodeStatement));
-    stmt->as.binary_expression_statement = (AstNodeBinaryOperationStatement*) malloc(sizeof(AstNodeBinaryOperationStatement));
+    stmt->as.assigment_statement = (AstNodeAssignmentStatement*) malloc(sizeof(AstNodeAssignmentStatement));
 
-    stmt->as.binary_expression_statement->left = term;
+    stmt->as.assigment_statement.var = term->value.identifier->var;
 
     return stmt;
 }
@@ -89,10 +89,10 @@ AstNodeLiteral* build_ast_literal() {
     return literal;
 }
 
-AstNodeAssignment* build_ast_assignment() {
+AstNodeAssignmentStatement* build_ast_assignment() {
     Token* token = peekToken();
     
-    AstNodeAssignment* assignment = (AstNodeAssignment*) malloc(sizeof(AstNodeAssignment));
+    AstNodeAssignmentStatement* assignment = (AstNodeAssignmentStatement*) malloc(sizeof(AstNodeAssignmentStatement));
 
     assignment->var = (Variable*) malloc(sizeof(Variable));
 

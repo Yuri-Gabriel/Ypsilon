@@ -1,14 +1,14 @@
 {
     "configurations": [
         {
-            "name": "WSL",
+            "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/src"
             ],
-            "compilerPath": "/usr/bin/gcc",
+            "compilerPath": "C:/mingw64/bin/gcc.exe",
             "cStandard": "c11",
-            "intelliSenseMode": "linux-gcc-x64"
+            "intelliSenseMode": "windows-gcc-x64"
         }
     ],
     "version": 4

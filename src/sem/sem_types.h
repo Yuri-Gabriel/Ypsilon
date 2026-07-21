@@ -1,118 +1,94 @@
-#pragma once
+#ifndef AST_H
+#define AST_H
 
-#include "../lex/token/token.h"
+// --- ENUMS DE TIPO ---
+typedef enum {
+    EXPR_LITERAL,
+    EXPR_VARIABLE,
+    EXPR_BINARY
+} ExprType;
 
-typedef struct Variable {
-    char* alias;
+typedef enum {
+    STMT_ASSIGNMENT,
+    STMT_IF,
+    STMT_WHILE,
+    STMT_FOR,
+    STMT_BREAK,
+    STMT_CONTINUE,
+    STMT_BLOCK
+} StmtType;
+
+// --- DECLARAÇÕES ANTECIPADAS ---
+typedef struct AstNodeExpr AstNodeExpr;
+typedef struct AstNodeStmt AstNodeStmt;
+
+// --- EXPRESSÕES (Avaliam para um valor) ---
+
+typedef struct {
     char* value;
-    unsigned char type;
-} Variable;
-
-typedef struct AstNode AstNode;
-typedef struct AstNodeProg AstNodeProg;
-
-typedef struct AstNodeStatement AstNodeStatement;
-typedef struct AstNodeIfStatement AstNodeIfStatement;
-typedef struct AstNodeWhileStatement AstNodeWhileStatement;
-typedef struct AstNodeBreakStatement AstNodeBreakStatement;
-typedef struct AstNodeContinueStatement AstNodeContinueStatement;
-typedef struct AstNodeForStatement AstNodeForStatement;
-typedef struct AstNodeBinaryOperationStatement AstNodeBinaryOperationStatement;
-
-typedef struct AstNodeTerm AstNodeTerm;
-typedef struct AstNodeLiteral AstNodeLiteral;
-typedef struct AstNodeAssignmentStatement AstNodeAssignmentStatement;
-
-typedef struct AstNodeCondBinaryRel AstNodeCondBinaryRel;
-typedef struct AstNodeCondLogical AstNodeCondLogical;
-typedef struct AstNodeCondition AstNodeCondition;
-
-typedef struct AstNodeLiteral {
-    char* value;
+    char* type; // "string", "number", "bool"
 } AstNodeLiteral;
 
-typedef struct AstNodeAssignmentStatement {
-    char* assignment_operator;
-    Variable* var;
-} AstNodeAssignmentStatement;
+typedef struct {
+    char* name; // Ex: "texto", "contador"
+} AstNodeVariable;
 
-typedef struct AstNodeTerm {
+typedef struct {
+    char* op;             // "+", "-", "==", "&&", "<="
+    AstNodeExpr* left;   // Pode ser literal, variável OU outra operação!
+    AstNodeExpr* right;  // Permite recursão (ex: 1 + 2 + 3)
+} AstNodeBinaryExpr;
+
+struct AstNodeExpr {
+    ExprType type;
     union {
-        AstNodeLiteral* literal;
-        AstNodeAssignmentStatement* identifier;
-    } value;
-} AstNodeTerm;
-
-typedef struct AstNodeCondBinaryRel {
-    char* relational_operator;
-    AstNodeTerm* left;
-    AstNodeTerm* right;
-} AstNodeCondBinaryRel;
-
-typedef struct AstNodeCondLogical {
-    char* logical_operator;
-    AstNodeCondition* left;
-    AstNodeCondition* right;
-} AstNodeCondLogical;
-
-typedef struct AstNodeCondition {
-    char* type;
-    union {
-        AstNodeCondBinaryRel* binary_rel;
-        AstNodeCondLogical* logical;
+        AstNodeLiteral literal;
+        AstNodeVariable variable;
+        AstNodeBinaryExpr binary;
     } as;
-} AstNodeCondition;
+};
 
-typedef struct AstNodeBinaryOperationStatement {
-    char* op;
-    AstNodeTerm* left;
-    AstNodeTerm* right;
-} AstNodeBinaryOperationStatement;
+// --- INSTRUÇÕES / STATEMENTS (Ações do programa) ---
 
-typedef struct AstNodeIfStatement {
-    AstNodeCondition* condition;
-    AstNodeStatement* statement;
-    AstNodeStatement* else_statement;
-} AstNodeIfStatement;
+typedef struct {
+    char* var_type;      // "string", "number" (ou NULL se for reatribuição)
+    char* var_name;      // Ex: "texto"
+    char* op;            // "="
+    AstNodeExpr* value;  // Aceita QUALQUER expressão (literal, variável, 5 + 3, etc.)
+} AstNodeAssignment;
 
-typedef struct AstNodeWhileStatement {
-    AstNodeCondition* condition;
-    AstNodeStatement* statement;
-} AstNodeWhileStatement;
+typedef struct {
+    AstNodeStmt** stmts; // Lista/Array de instruções dentro do bloco { ... }
+    int count;
+} AstNodeBlock;
 
-typedef struct AstNodeBreakStatement {
-} AstNodeBreakStatement;
+typedef struct {
+    AstNodeExpr* condition;  // Ex: x > 0 ou (a == b && c < d)
+    AstNodeStmt* then_block; // Bloco executado se verdadeiro
+    AstNodeStmt* else_block; // Bloco executado se falso (opcional)
+} AstNodeIf;
 
-typedef struct AstNodeContinueStatement {
-} AstNodeContinueStatement;
+typedef struct {
+    AstNodeExpr* condition;
+    AstNodeStmt* body;
+} AstNodeWhile;
 
-typedef struct AstNodeForStatement {
-    AstNodeAssignmentStatement* var;
-    AstNodeWhileStatement* statement;
-} AstNodeForStatement;
-
-typedef struct AstNodeStatement {
+struct AstNodeStmt {
+    StmtType type; // <--- TAG INDISPENSÁVEL
+    AstNodeStmt* next;
     union {
-        AstNodeBinaryOperationStatement* binary_expression_statement;
-        AstNodeIfStatement* if_statement;
-        AstNodeWhileStatement* while_statement;
-        AstNodeForStatement* for_statement;
-        AstNodeBreakStatement* break_statement;
-        AstNodeContinueStatement* continue_statement;
-        AstNodeAssignmentStatement* assigment_statement;
+        AstNodeAssignment assignment;
+        AstNodeIf if_stmt;
+        AstNodeWhile while_stmt;
+        AstNodeBlock block;
+        // Break e Continue não precisam de dados extra
     } as;
-} AstNodeStatement;
+};
 
-typedef struct AstNode {
-    unsigned char type;
-    AstNode* exit_node;
-    union {
-        AstNodeTerm* term;
-        AstNodeStatement* statement;
-    } value;
-} AstNode;
-
-typedef struct AstNodeProg {
-    AstNodeStatement* stmts;
+// --- NÓ RAIZ (PROGRAMA) ---
+typedef struct {
+    AstNodeStmt** stmts;
     int stmts_count;
 } AstNodeProg;
+
+#endif

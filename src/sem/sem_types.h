@@ -3,6 +3,12 @@
 
 // --- ENUMS DE TIPO ---
 typedef enum {
+    LITERAL_STR,
+    LITERAL_NUMBER,
+    LITERAL_BOOL
+} LieralType;
+
+typedef enum {
     EXPR_LITERAL,
     EXPR_VARIABLE,
     EXPR_BINARY
@@ -26,7 +32,7 @@ typedef struct AstNodeStmt AstNodeStmt;
 
 typedef struct {
     char* value;
-    char* type; // "string", "number", "bool"
+    LieralType type; 
 } AstNodeLiteral;
 
 typedef struct {
@@ -59,18 +65,18 @@ typedef struct {
 
 typedef struct {
     AstNodeStmt** stmts; // Lista/Array de instruções dentro do bloco { ... }
-    int count;
+    int stmts_count;
 } AstNodeBlock;
 
 typedef struct {
     AstNodeExpr* condition;  // Ex: x > 0 ou (a == b && c < d)
-    AstNodeStmt* then_block; // Bloco executado se verdadeiro
-    AstNodeStmt* else_block; // Bloco executado se falso (opcional)
+    AstNodeBlock* then_block; // Bloco executado se verdadeiro
+    AstNodeBlock* else_block; // Bloco executado se falso (opcional)
 } AstNodeIf;
 
 typedef struct {
     AstNodeExpr* condition;
-    AstNodeStmt* body;
+    AstNodeBlock* body;
 } AstNodeWhile;
 
 struct AstNodeStmt {
@@ -80,7 +86,6 @@ struct AstNodeStmt {
         AstNodeAssignment assignment;
         AstNodeIf if_stmt;
         AstNodeWhile while_stmt;
-        AstNodeBlock block;
         // Break e Continue não precisam de dados extra
     } as;
 };

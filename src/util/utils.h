@@ -30,6 +30,34 @@ void trim(char* str) {
     str[i] = '\0';
 }
 
+bool isNumber(const char* str) {
+    int i = 0;
+    int tem_ponto = 0;
+    int tem_digito = 0;
+
+    // Verificar sinal opcional no início
+    if (str[0] == '-' || str[0] == '+') {
+        i++;
+    }
+
+    // Percorrer o restante da string
+    for (; str[i] != '\0'; i++) {
+        if (str[i] >= '0' && str[i] <= '9') {
+            tem_digito = 1;
+        } else if (str[i] == '.') {
+            if (tem_ponto) return 0; // Segundo ponto inválido
+            tem_ponto = 1;
+        } else {
+            return 0; // Caractere inválido
+        }
+    }
+
+    if (!tem_digito) return 0; // Apenas um sinal isolado não é número
+
+    // Retorna 1 para INT e 2 para FLOAT
+    return tem_ponto ? 2 : 1; 
+}
+
 bool isEmpty(char c) {
     return c == '\0' || isspace(c);
 }
@@ -54,6 +82,21 @@ bool inStringArray(char* array[], int arraySize, const char* value) {
     }
 
     return false;
+}
+
+bool startsWith(const char* text, const char* prefix) {
+
+    size_t text_len = strlen(text);
+    size_t prefix_len = strlen(prefix);
+
+    if(prefix_len > text_len)
+        return false;
+
+    return strncmp(
+        text,
+        prefix,
+        prefix_len
+    ) == 0;
 }
 
 bool endsWith(const char* text, const char* suffix) {

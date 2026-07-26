@@ -79,14 +79,27 @@ typedef struct {
     AstNodeBlock* body;
 } AstNodeWhile;
 
+typedef struct {
+    char* method_name;
+    AstNodeExpr** args;
+    int args_count;
+} AstNodeCallMethod;
+
+typedef struct {
+    char* method_name;
+    AstNodeExpr** args;
+    int args_count;
+    AstNodeBlock* block;
+} AstNodeCallMethod;
+
 struct AstNodeStmt {
-    StmtType type; // <--- TAG INDISPENSÁVEL
+    StmtType type;
     AstNodeStmt* next;
     union {
         AstNodeAssignment assignment;
         AstNodeIf if_stmt;
         AstNodeWhile while_stmt;
-        // Break e Continue não precisam de dados extra
+        AstNodeCallMethod call_method_stmt;
     } as;
 };
 

@@ -1,5 +1,5 @@
 
-if(i == 1) {
+if() {
     bool verdade = true;
     bool mentira = false;
 } else {

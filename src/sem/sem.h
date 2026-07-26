@@ -29,15 +29,14 @@ AstNodeStmt* build_ast_statement(void);
 AstNodeStmt* build_ast_assignment(void);
 AstNodeStmt* build_ast_flow_control(void);
 AstNodeStmt* build_ast_if_stmt(void);
+AstNodeBlock* build_ast_else_stmt();
 AstNodeStmt* build_ast_while_stmt(void);
+AstNodeStmt* build_ast_define_method_stmt(void);
+AstNodeStmt* build_ast_call_method_stmt(void);
 AstNodeExpr* build_ast_expr(void);
 AstNodeExpr* build_ast_primary(void);
 AstNodeExpr* build_ast_literal(void);
 AstNodeExpr* build_ast_variable(void);
-void printAstProgram(AstNodeProg* prog);
-void printAstStmt(AstNodeStmt* stmt, int level);
-void printAstExpr(AstNodeExpr* expr, int level);
-void printAstBlock(AstNodeBlock* block, int level);
 
 // --- Navegação na Fila de Tokens ---
 
@@ -77,170 +76,6 @@ AstNodeProg* analyze(Queue* tokens) {
     queue = tokens;
     return build_ast_program();
 }
-
-// --- Debug / Impressao da AST ---
-
-const char* stmtTypeName(StmtType type) {
-    switch (type) {
-        case STMT_ASSIGNMENT: return "STMT_ASSIGNMENT";
-        case STMT_IF: return "STMT_IF";
-        case STMT_WHILE: return "STMT_WHILE";
-        case STMT_FOR: return "STMT_FOR";
-        case STMT_BREAK: return "STMT_BREAK";
-        case STMT_CONTINUE: return "STMT_CONTINUE";
-        case STMT_BLOCK: return "STMT_BLOCK";
-        default: return "STMT_UNKNOWN";
-    }
-}
-
-const char* exprTypeName(ExprType type) {
-    switch (type) {
-        case EXPR_LITERAL: return "EXPR_LITERAL";
-        case EXPR_VARIABLE: return "EXPR_VARIABLE";
-        case EXPR_BINARY: return "EXPR_BINARY";
-        default: return "EXPR_UNKNOWN";
-    }
-}
-
-const char* literalTypeName(LiteralType type) {
-    switch (type) {
-        case LITERAL_STR: return "LITERAL_STR";
-        case LITERAL_NUMBER: return "LITERAL_NUMBER";
-        case LITERAL_BOOL: return "LITERAL_BOOL";
-        default: return "LITERAL_UNKNOWN";
-    }
-}
-
-void printAstIndent(int level) {
-    for (int i = 0; i < level; i++) {
-        printf("   |    ");
-    }
-}
-
-void printAstField(int level, const char* name, const char* value) {
-    printAstIndent(level);
-    printf("|____%s = %s\n", name, value == NULL ? "NULL" : value);
-}
-
-void printAstFieldInt(int level, const char* name, int value) {
-    printAstIndent(level);
-    printf("|____%s = %d\n", name, value);
-}
-
-void printAstProgram(AstNodeProg* prog) {
-    if (prog == NULL) {
-        printf("AstNodeProg: NULL\n");
-        return;
-    }
-
-    printf("AstNodeProg:\n");
-    printAstFieldInt(1, "stmts_count", prog->stmts_count);
-
-    if (prog->stmts_count > 0) {
-        printAstStmt(prog->stmts[0], 1);
-    }
-}
-
-void printAstBlock(AstNodeBlock* block, int level) {
-    if (block == NULL) {
-        printAstField(level, "AstNodeBlock", "NULL");
-        return;
-    }
-
-    printAstIndent(level);
-    printf("|____AstNodeBlock:\n");
-    printAstFieldInt(level + 1, "stmts_count", block->stmts_count);
-
-    if (block->stmts_count > 0) {
-        printAstStmt(block->stmts[0], level + 1);
-    }
-}
-
-void printAstExpr(AstNodeExpr* expr, int level) {
-    if (expr == NULL) {
-        printAstField(level, "AstNodeExpr", "NULL");
-        return;
-    }
-
-    printAstIndent(level);
-    printf("|____AstNodeExpr:\n");
-    printAstField(level + 1, "type", exprTypeName(expr->type));
-    printAstIndent(level + 1);
-    printf("|____as:\n");
-
-    switch (expr->type) {
-        case EXPR_LITERAL:
-            printAstField(level + 2, "value", expr->as.literal.value);
-            printAstField(level + 2, "type", literalTypeName(expr->as.literal.type));
-            break;
-        case EXPR_VARIABLE:
-            printAstField(level + 2, "name", expr->as.variable.name);
-            break;
-        case EXPR_BINARY:
-            printAstField(level + 2, "op", expr->as.binary.op);
-            printAstIndent(level + 2);
-            printf("|____left:\n");
-            printAstExpr(expr->as.binary.left, level + 3);
-            printAstIndent(level + 2);
-            printf("|____right:\n");
-            printAstExpr(expr->as.binary.right, level + 3);
-            break;
-    }
-}
-
-void printAstStmt(AstNodeStmt* stmt, int level) {
-    if (stmt == NULL) {
-        printAstField(level, "AstNodeStmt", "NULL");
-        return;
-    }
-
-    printAstIndent(level);
-    printf("|____AstNodeStmt:\n");
-    printAstField(level + 1, "type", stmtTypeName(stmt->type));
-    printAstIndent(level + 1);
-    printf("|____as:\n");
-
-    switch (stmt->type) {
-        case STMT_ASSIGNMENT:
-            printAstField(level + 2, "var_type", stmt->as.assignment.var_type);
-            printAstField(level + 2, "var_name", stmt->as.assignment.var_name);
-            printAstField(level + 2, "op", stmt->as.assignment.op);
-            printAstIndent(level + 2);
-            printf("|____value:\n");
-            printAstExpr(stmt->as.assignment.value, level + 3);
-            break;
-        case STMT_IF:
-            printAstIndent(level + 2);
-            printf("|____condition:\n");
-            printAstExpr(stmt->as.if_stmt.condition, level + 3);
-            printAstIndent(level + 2);
-            printf("|____then_block:\n");
-            printAstBlock(stmt->as.if_stmt.then_block, level + 3);
-            printAstIndent(level + 2);
-            printf("|____else_block:\n");
-            printAstBlock(stmt->as.if_stmt.else_block, level + 3);
-            break;
-        case STMT_WHILE:
-            printAstIndent(level + 2);
-            printf("|____condition:\n");
-            printAstExpr(stmt->as.while_stmt.condition, level + 3);
-            printAstIndent(level + 2);
-            printf("|____body:\n");
-            printAstBlock(stmt->as.while_stmt.body, level + 3);
-            break;
-        case STMT_FOR:
-        case STMT_BREAK:
-        case STMT_CONTINUE:
-        case STMT_BLOCK:
-            printAstField(level + 2, "data", "NULL");
-            break;
-    }
-
-    printAstIndent(level + 1);
-    printf("|____next:\n");
-    printAstStmt(stmt->next, level + 2);
-}
-
 // --- Construção dos Nós da AST ---
 
 AstNodeProg* build_ast_program(void) {
@@ -340,16 +175,21 @@ AstNodeStmt* build_ast_if_stmt(void) {
 
     verifyTokenAndWalk("}");
 
-    token = peekToken();
+    stmt->as.if_stmt.else_block = build_ast_else_stmt();
+    return stmt;
+}
 
-    if (token == NULL || strcmp(token->value, "else") != 0) return stmt;
+AstNodeBlock* build_ast_else_stmt(void) {
+    Token* token = peekToken();
+
+    if (token == NULL || strcmp(token->value, "else") != 0) return NULL;
 
     consumeToken();
 
     verifyTokenAndWalk("{");
 
-    current_block_stmt = NULL; 
-    block = (AstNodeBlock*) malloc(sizeof(AstNodeBlock));
+    AstNodeStmt* current_block_stmt = NULL; 
+    AstNodeBlock* block = (AstNodeBlock*) malloc(sizeof(AstNodeBlock));
     
     block->stmts = NULL;
     block->stmts_count = 0;
@@ -370,11 +210,9 @@ AstNodeStmt* build_ast_if_stmt(void) {
         token = peekToken();
     }
 
-    stmt->as.if_stmt.else_block = block;
-
     verifyTokenAndWalk("}");
 
-    return stmt;
+    return block;
 }
 
 AstNodeStmt* build_ast_while_stmt(void) {
@@ -420,6 +258,9 @@ AstNodeStmt* build_ast_while_stmt(void) {
     return stmt;
 }
 
+AstNodeStmt* build_ast_define_method_stmt(void);
+AstNodeStmt* build_ast_call_method_stmt(void);
+
 AstNodeStmt* build_ast_assignment(void) {
     Token* token = peekToken();
     if (token == NULL) return NULL;
@@ -434,7 +275,7 @@ AstNodeStmt* build_ast_assignment(void) {
         consumeToken();
         token = peekToken();
     } else {
-        stmt->as.assignment.var_type = NULL; // CORREÇÃO: Permite reatribuição (ex: x = 10)
+        stmt->as.assignment.var_type = NULL; // Permite reatribuição (ex: x = 10)
     }
 
     // 2. Processa o NOME da variável

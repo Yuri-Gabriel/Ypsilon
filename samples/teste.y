@@ -1,15 +1,9 @@
-string msg = "hello";
-number i = 0;
-i = 1;
 
 if(i == 1) {
     bool verdade = true;
     bool mentira = false;
-}
-
-while(i < 10) {
+} else {
     number teste = 2;
+    string txt = "txt_msg";
 }
-
-number num = 3.14;
 

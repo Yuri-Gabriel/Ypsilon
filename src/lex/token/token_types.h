@@ -19,7 +19,7 @@
 
 // KEYWORD
 char* keywords[] = {
-    "while", "for", "if", "else", "elif", "break", "continue", "print", "input"
+    "while", "if", "else", "print", "input"
 };
 
 bool isKeyword(char* text) {

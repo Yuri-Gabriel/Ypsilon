@@ -20,7 +20,7 @@ Ypsilon é um projeto de compilador escrito em C. No estado atual, o projeto pos
 - `main.c`: ponto de entrada do programa. Lê o arquivo informado por argumento, executa a tokenização e imprime os tokens.
 - `teste.y`: arquivo de exemplo usado como entrada para o compilador.
 - `lex/lex.h`: implementação do analisador léxico.
-- `lex/queue.h`: estrutura de fila usada para armazenar os tokens.
+- `lex/List.h`: estrutura de fila usada para armazenar os tokens.
 - `lex/token/token.h`: definição da estrutura `Token`.
 - `lex/token/token_types.h`: definição e identificação dos tipos de token.
 - `util/file_reader.h`: leitura de arquivos `.y`.

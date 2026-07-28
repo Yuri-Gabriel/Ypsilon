@@ -79,6 +79,7 @@ Queue* tokenize(char* expr_str) {
                 if(isEmpty(current_character)
                     || isOperator(&current_character)
                     || isPunctuator(current_character)
+                    || current_character == ','
                 ) {
                     break;
                 }

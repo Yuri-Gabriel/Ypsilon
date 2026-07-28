@@ -19,7 +19,7 @@
 
 // KEYWORD
 char* keywords[] = {
-    "while", "if", "else", "print", "input"
+    "while", "if", "else", "function"
 };
 
 bool isKeyword(char* text) {
@@ -91,7 +91,7 @@ bool isLiteral(const char *str) {
 
 //PUNCTUATOR
 char punctuators[] = {
-    ';', '(', ')', '{', '}', '[', ']'
+    ';', ':', '(', ')', '{', '}', '[', ']', ','
 };
 
 bool isPunctuator(char text) {

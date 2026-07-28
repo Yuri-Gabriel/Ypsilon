@@ -1,28 +1,24 @@
 #ifndef AST_H
 #define AST_H
 
+#include <stdio.h>
+#include <stdlib.h>
+
 // --- ENUMS DE TIPO ---
-typedef enum {
-    LITERAL_STR,
-    LITERAL_NUMBER,
-    LITERAL_BOOL
-} LiteralType;
+#define LITERAL_STR         0x01
+#define LITERAL_NUMBER      0x02
+#define LITERAL_BOOL        0x03
 
-typedef enum {
-    EXPR_LITERAL,
-    EXPR_VARIABLE,
-    EXPR_BINARY
-} ExprType;
+#define EXPR_LITERAL        0x01
+#define EXPR_VARIABLE       0x02
+#define EXPR_BINARY         0x03
 
-typedef enum {
-    STMT_ASSIGNMENT,
-    STMT_IF,
-    STMT_WHILE,
-    STMT_FOR,
-    STMT_BREAK,
-    STMT_CONTINUE,
-    STMT_BLOCK
-} StmtType;
+#define STMT_ASSIGNMENT     0x01
+#define STMT_IF             0x02
+#define STMT_WHILE          0x03
+#define STMT_BLOCK          0x04
+#define STMT_FUNCTION_DEF   0x05
+#define STMT_FUNCTION_CALL  0x06
 
 // --- DECLARAÇÕES ANTECIPADAS ---
 typedef struct AstNodeExpr AstNodeExpr;
@@ -32,7 +28,7 @@ typedef struct AstNodeStmt AstNodeStmt;
 
 typedef struct {
     char* value;
-    LiteralType type; 
+    char type; 
 } AstNodeLiteral;
 
 typedef struct {
@@ -46,13 +42,18 @@ typedef struct {
 } AstNodeBinaryExpr;
 
 struct AstNodeExpr {
-    ExprType type;
+    char type;
     union {
         AstNodeLiteral literal;
         AstNodeVariable variable;
         AstNodeBinaryExpr binary;
     } as;
 };
+
+typedef struct AstNodeArgFunction {
+    AstNodeExpr* expr;
+    struct AstNodeArgFunction* next;
+} AstNodeArgFunction;
 
 // --- INSTRUÇÕES / STATEMENTS (Ações do programa) ---
 
@@ -69,7 +70,7 @@ typedef struct {
 } AstNodeBlock;
 
 typedef struct {
-    AstNodeExpr* condition;  // Ex: x > 0 ou (a == b && c < d)
+    AstNodeExpr* condition;   // Ex: x > 0 ou (a == b && c < d)
     AstNodeBlock* then_block; // Bloco executado se verdadeiro
     AstNodeBlock* else_block; // Bloco executado se falso (opcional)
 } AstNodeIf;
@@ -80,26 +81,28 @@ typedef struct {
 } AstNodeWhile;
 
 typedef struct {
-    char* method_name;
-    AstNodeExpr** args;
+    char* name;
+    AstNodeArgFunction** args;
     int args_count;
-} AstNodeCallMethod;
+} AstNodeCallFunction;
 
 typedef struct {
-    char* method_name;
-    AstNodeExpr** args;
+    char* name;
+    AstNodeArgFunction** args;
     int args_count;
     AstNodeBlock* block;
-} AstNodeCallMethod;
+    AstNodeExpr* return_expr;
+} AstNodeDefinitionFunction;
 
 struct AstNodeStmt {
-    StmtType type;
+    char type;
     AstNodeStmt* next;
     union {
         AstNodeAssignment assignment;
         AstNodeIf if_stmt;
         AstNodeWhile while_stmt;
-        AstNodeCallMethod call_method_stmt;
+        AstNodeCallFunction call_function_stmt;
+        AstNodeDefinitionFunction def_function_stmt;
     } as;
 };
 
@@ -112,11 +115,11 @@ typedef struct {
 
 static void print_indent(int level);
 void printProg(AstNodeProg *prog);
-const char *stmtTypeToString(StmtType type);
+const char *stmtTypeToString(char type);
 void printBlock(AstNodeBlock *block, int level);
 void printStmt(AstNodeStmt *stmt, int level);
-const char *exprTypeToString(ExprType type);
-const char *literalTypeToString(LiteralType type);
+const char *exprTypeToString(char type);
+const char *literalTypeToString(char type);
 void printExpr(AstNodeExpr *expr, int level);
 
 static void print_indent(int level) {
@@ -140,16 +143,15 @@ void printProg(AstNodeProg *prog) {
     }
 }
 
-const char *stmtTypeToString(StmtType type) {
+const char *stmtTypeToString(char type) {
     switch (type) {
-        case STMT_ASSIGNMENT: return "ASSIGNMENT";
-        case STMT_IF:         return "IF";
-        case STMT_WHILE:      return "WHILE";
-        case STMT_FOR:        return "FOR";
-        case STMT_BREAK:      return "BREAK";
-        case STMT_CONTINUE:   return "CONTINUE";
-        case STMT_BLOCK:      return "BLOCK";
-        default:              return "UNKNOWN";
+        case STMT_ASSIGNMENT:       return "ASSIGNMENT";
+        case STMT_IF:               return "IF";
+        case STMT_WHILE:            return "WHILE";
+        case STMT_FUNCTION_DEF:     return "FUNCTION_DEF";
+        case STMT_FUNCTION_CALL:    return "FUNCTION_CALL";
+        case STMT_BLOCK:            return "BLOCK";
+        default:                    return "UNKNOWN";
     }
 }
 
@@ -191,7 +193,7 @@ void printStmt(AstNodeStmt *stmt, int level) {
     case STMT_ASSIGNMENT:
         print_indent(level + 2);
         printf("|____var_type = %s\n",
-               stmt->as.assignment.var_type);
+               stmt->as.assignment.var_type ? stmt->as.assignment.var_type : "NULL");
 
         print_indent(level + 2);
         printf("|____var_name = %s\n",
@@ -230,6 +232,52 @@ void printStmt(AstNodeStmt *stmt, int level) {
         printBlock(stmt->as.while_stmt.body, level + 3);
         break;
 
+    case STMT_FUNCTION_DEF:
+        print_indent(level + 2);
+        printf("|____name = %s\n", stmt->as.def_function_stmt.name ? stmt->as.def_function_stmt.name : "NULL");
+
+        print_indent(level + 2);
+        printf("|____args_count = %d\n", stmt->as.def_function_stmt.args_count);
+
+        for (int i = 0; i < stmt->as.def_function_stmt.args_count; i++) {
+            print_indent(level + 2);
+            printf("|____arg[%d]:\n", i);
+            if (stmt->as.def_function_stmt.args && stmt->as.def_function_stmt.args[i]) {
+                printExpr(stmt->as.def_function_stmt.args[i]->expr, level + 3);
+            } else {
+                print_indent(level + 3);
+                printf("|____NULL\n");
+            }
+        }
+
+        print_indent(level + 2);
+        printf("|____block:\n");
+        printBlock(stmt->as.def_function_stmt.block, level + 3);
+
+        print_indent(level + 2);
+        printf("|____return_expr:\n");
+        printExpr(stmt->as.def_function_stmt.return_expr, level + 3);
+        break;
+
+    case STMT_FUNCTION_CALL:
+        print_indent(level + 2);
+        printf("|____name = %s\n", stmt->as.call_function_stmt.name ? stmt->as.call_function_stmt.name : "NULL");
+
+        print_indent(level + 2);
+        printf("|____args_count = %d\n", stmt->as.call_function_stmt.args_count);
+
+        for (int i = 0; i < stmt->as.call_function_stmt.args_count; i++) {
+            print_indent(level + 2);
+            printf("|____arg[%d]:\n", i);
+            if (stmt->as.call_function_stmt.args && stmt->as.call_function_stmt.args[i]) {
+                printExpr(stmt->as.call_function_stmt.args[i]->expr, level + 3);
+            } else {
+                print_indent(level + 3);
+                printf("|____NULL\n");
+            }
+        }
+        break;
+
     default:
         break;
     }
@@ -239,7 +287,7 @@ void printStmt(AstNodeStmt *stmt, int level) {
     printStmt(stmt->next, level + 2);
 }
 
-const char *exprTypeToString(ExprType type) {
+const char *exprTypeToString(char type) {
     switch (type) {
         case EXPR_LITERAL:  return "LITERAL";
         case EXPR_VARIABLE: return "VARIABLE";
@@ -248,7 +296,7 @@ const char *exprTypeToString(ExprType type) {
     }
 }
 
-const char *literalTypeToString(LiteralType type) {
+const char *literalTypeToString(char type) {
     switch (type) {
         case LITERAL_STR:    return "STRING";
         case LITERAL_NUMBER: return "NUMBER";

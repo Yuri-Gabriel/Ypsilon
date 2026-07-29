@@ -266,15 +266,20 @@ void printStmt(AstNodeStmt *stmt, int level) {
         print_indent(level + 2);
         printf("|____args_count = %d\n", stmt->as.call_function_stmt.args_count);
 
-        for (int i = 0; i < stmt->as.call_function_stmt.args_count; i++) {
+        if(stmt->as.call_function_stmt.args_count == 0) break;
+
+        int arg_index = 0;
+        AstNodeArgFunction* current_arg = stmt->as.call_function_stmt.args[arg_index];
+        while(current_arg != NULL) {
             print_indent(level + 2);
-            printf("|____arg[%d]:\n", i);
-            if (stmt->as.call_function_stmt.args && stmt->as.call_function_stmt.args[i]) {
-                printExpr(stmt->as.call_function_stmt.args[i]->expr, level + 3);
+            printf("|____arg[%d]:\n", ++arg_index);
+            if (current_arg->expr != NULL) {
+                printExpr(current_arg->expr, level + 3);
             } else {
                 print_indent(level + 3);
                 printf("|____NULL\n");
             }
+            current_arg = current_arg->next;
         }
         break;
 

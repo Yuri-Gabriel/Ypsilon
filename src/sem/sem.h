@@ -43,7 +43,7 @@ AstNodeArgFunction* build_ast_arg_function(void);
 
 Token* peekToken(void) {
     if (queue == NULL || queue->first == NULL) return NULL;
-    printf("\n[peekToken] Token value: %s\n", queue->first->value->value);
+    //printf("\n[peekToken] Token value: %s\n", queue->first->value->value);
     return (Token*) queue->first->value;
 }
 
@@ -57,7 +57,9 @@ Token* consumeToken(void) {
     
     Token* consumed = (Token*) queue->first->value;
     queue->first = queue->first->prev; 
-    printf("\n[consumeToken] Token value: %s -> %s\n", consumed->value, queue->first->value->value);
+    if(queue->first != NULL) {
+        //printf("\n[consumeToken] Token value: %s -> %s\n", consumed->value, queue->first->value->value);
+    }
     
     return consumed;
 }
@@ -65,16 +67,16 @@ Token* consumeToken(void) {
 // --- Verificações ---
 
 void verifyTokenAndWalk(char* token_str) {
-    printf("\nEntry: verifyTokenAndWalk");
+    //printf("\nEntry: verifyTokenAndWalk");
     Token* token = peekToken();
-    printf("\n[verifyTokenAndWalk] Token value: %s | value verified: %s\n", token->value, token_str);
+    //printf("\n[verifyTokenAndWalk] Token value: %s | value verified: %s\n", token->value, token_str);
     if (token == NULL || strcmp(token->value, token_str) != 0) {
         char message[0x100];
         snprintf(message, sizeof(message), "Missing '%s'", token_str);
         throwError(message, 0);
     }
     consumeToken();
-    printf("\nExit: verifyTokenAndWalk");
+    //printf("\nExit: verifyTokenAndWalk");
 }
 
 void verifySemiColon(void) {
@@ -90,7 +92,7 @@ AstNodeProg* analyze(Queue* tokens) {
 // --- Construção dos Nós da AST ---
 
 AstNodeProg* build_ast_program(void) {
-    printf("\nEntry: build_ast_program");
+    //printf("\nEntry: build_ast_program");
     AstNodeProg* prog = (AstNodeProg*) malloc(sizeof(AstNodeProg));
     prog->stmts = NULL;
     prog->stmts_count = 0;
@@ -113,12 +115,12 @@ AstNodeProg* build_ast_program(void) {
         prog->stmts[prog->stmts_count - 1] = stmt;
     }
 
-    printf("\nExit: build_ast_program");
+    //printf("\nExit: build_ast_program");
     return prog;
 }
 
 AstNodeStmt* build_ast_statement(void) {
-    printf("\nEntry: build_ast_statement");
+    //printf("\nEntry: build_ast_statement");
     Token* token = peekToken();
     if (token == NULL) return NULL;
 
@@ -129,36 +131,37 @@ AstNodeStmt* build_ast_statement(void) {
         verifySemiColon();
     } else if(token->type == IDENTIFIER) {
         stmt = build_ast_call_function_stmt();
+        verifySemiColon();
     } else if (token->type == KEYWORD) {
         stmt = build_ast_flow_control();
     } 
 
-    printf("\nExit: build_ast_statement");
+    //printf("\nExit: build_ast_statement");
     return stmt;
 }
 
 AstNodeStmt* build_ast_flow_control(void) {
-    printf("\nEntry: build_ast_flow_control");
+    //printf("\nEntry: build_ast_flow_control");
     Token* token = peekToken();
     if (token == NULL) return NULL;
     
     if (strcmp(token->value, "if") == 0) {
-        printf("\nExit: build_ast_flow_control");
+        //printf("\nExit: build_ast_flow_control");
         return build_ast_if_stmt();
     } else if (strcmp(token->value, "while") == 0) {
-        printf("\nExit: build_ast_flow_control");
+        //printf("\nExit: build_ast_flow_control");
         return build_ast_while_stmt();
     } else if(strcmp(token->value, "function") == 0) {
-        printf("\nExit: build_ast_flow_control");
+        //printf("\nExit: build_ast_flow_control");
         return build_ast_define_function_stmt();
     }
 
-    printf("\nExit: build_ast_flow_control");
+    //printf("\nExit: build_ast_flow_control");
     return NULL;
 }
 
 AstNodeStmt* build_ast_if_stmt(void) {
-    printf("\nEntry: build_ast_if_stmt");
+    //printf("\nEntry: build_ast_if_stmt");
     consumeToken(); // Consome o 'if'
     verifyTokenAndWalk("(");
 
@@ -201,12 +204,12 @@ AstNodeStmt* build_ast_if_stmt(void) {
     verifyTokenAndWalk("}");
 
     stmt->as.if_stmt.else_block = build_ast_else_stmt();
-    printf("\nExit: build_ast_if_stmt");
+    //printf("\nExit: build_ast_if_stmt");
     return stmt;
 }
 
 AstNodeBlock* build_ast_else_stmt(void) {
-    printf("\nEntry: build_ast_else_stmt");
+    //printf("\nEntry: build_ast_else_stmt");
     Token* token = peekToken();
 
     if (token == NULL || strcmp(token->value, "else") != 0) return NULL;
@@ -239,13 +242,13 @@ AstNodeBlock* build_ast_else_stmt(void) {
 
     verifyTokenAndWalk("}");
 
-    printf("\nExit: build_ast_else_stmt");
+    //printf("\nExit: build_ast_else_stmt");
 
     return block;
 }
 
 AstNodeStmt* build_ast_while_stmt(void) {
-    printf("\nEntry: build_ast_while_stmt");
+    //printf("\nEntry: build_ast_while_stmt");
     consumeToken(); // Consome o 'while'
     verifyTokenAndWalk("(");
 
@@ -285,7 +288,7 @@ AstNodeStmt* build_ast_while_stmt(void) {
 
     verifyTokenAndWalk("}");
 
-    printf("\nExit: build_ast_while_stmt");
+    //printf("\nExit: build_ast_while_stmt");
 
     return stmt;
 }
@@ -295,7 +298,7 @@ AstNodeStmt* build_ast_define_function_stmt(void) {
 }
 
 AstNodeStmt* build_ast_call_function_stmt(void) {
-    printf("\nEntry: build_ast_call_function_stmt");
+    //printf("\nEntry: build_ast_call_function_stmt");
     Node* node = peekNode();
     if (node == NULL) return NULL;
     if (node->prev == NULL) return NULL;
@@ -305,7 +308,7 @@ AstNodeStmt* build_ast_call_function_stmt(void) {
     }
 
     char* func_name = node->value->value;
-    printf("\nfunc_name: %s\n", func_name);
+    //printf("\nfunc_name: %s\n", func_name);
     consumeToken();
 
     verifyTokenAndWalk("(");
@@ -315,11 +318,13 @@ AstNodeStmt* build_ast_call_function_stmt(void) {
     stmt->next = NULL;
 
     stmt->as.call_function_stmt.name = func_name;
+    stmt->as.call_function_stmt.args_count = 0;
+    stmt->as.call_function_stmt.args = NULL;
 
     AstNodeArgFunction* current_arg = (AstNodeArgFunction*) malloc(sizeof(AstNodeArgFunction));
 
     Token* token = peekToken();
-    printf("\n first arg: %s\n", token->value);
+    //printf("\n first arg: %s\n", token->value);
     char* valid_tokens[] = {",", ")"};
     while(strcmp(token->value, ")") != 0) {
         AstNodeArgFunction* arg = build_ast_arg_function();
@@ -331,46 +336,39 @@ AstNodeStmt* build_ast_call_function_stmt(void) {
             current_arg = arg;
         }
 
+        stmt->as.call_function_stmt.args_count++;
+        stmt->as.call_function_stmt.args = (AstNodeArgFunction**) realloc(
+            stmt->as.call_function_stmt.args, 
+            sizeof(AstNodeArgFunction*) * stmt->as.call_function_stmt.args_count
+        );
+        stmt->as.call_function_stmt.args[stmt->as.call_function_stmt.args_count - 1] = arg;
         token = consumeToken();
 
         if(!inStringArray(valid_tokens, ARRAY_SIZE(valid_tokens), token->value)) {
             throwError("Missing ')' or ','", 0);
         }
     }
-    consumeToken();
 
-    printf("\n token->value: %s\n", token->value);
-    if(strcmp(token->value, ";") != 0) {
-        throwError("Missing ';'.", 0);
-    }
-
-    printf("\nExit: build_ast_call_function_stmt");
+    //printf("\nExit: build_ast_call_function_stmt");
     return stmt;
 
 }
 
 AstNodeArgFunction* build_ast_arg_function(void) {
-    printf("\nEntry: build_ast_arg_function");
+    //printf("\nEntry: build_ast_arg_function");
     Token* token = peekToken();
     if(token == NULL) return NULL;
 
     AstNodeArgFunction* arg = (AstNodeArgFunction*) malloc(sizeof(AstNodeArgFunction));
     arg->next = NULL;
+    arg->expr = build_ast_expr();
 
-    if(token->type == LITERAL) {
-        arg->expr = build_ast_literal();
-    } else if(token->type = IDENTIFIER) {
-        arg->expr = build_ast_variable();
-    } else {
-        throwError("Missing LITERAL or IDENTIFIER", 0);
-    }
-
-    printf("\nExit: build_ast_arg_function");
+    //printf("\nExit: build_ast_arg_function");
     return arg;
 }
 
 AstNodeStmt* build_ast_assignment(void) {
-    printf("\nEntry: build_ast_assignment");
+    //printf("\nEntry: build_ast_assignment");
     Token* token = peekToken();
     if (token == NULL) return NULL;
     
@@ -407,30 +405,30 @@ AstNodeStmt* build_ast_assignment(void) {
     // 4. Processa a EXPRESSÃO completa
     stmt->as.assignment.value = build_ast_expr();
 
-    printf("\nExit: build_ast_assignment");
+    //printf("\nExit: build_ast_assignment");
     return stmt;
 }
 
 AstNodeExpr* build_ast_primary(void) {
-    printf("\nEntry: build_ast_primary");
+    //printf("\nEntry: build_ast_primary");
     Token* token = peekToken();
     if (token == NULL) return NULL;
 
     if (token->type == LITERAL) {
-        printf("\nExit: build_ast_primary");
+        //printf("\nExit: build_ast_primary");
         return build_ast_literal();
     } 
     else if (token->type == IDENTIFIER) {
-        printf("\nExit: build_ast_primary");
+        //printf("\nExit: build_ast_primary");
         return build_ast_variable();
     }
 
-    printf("\nExit: build_ast_primary");
+    //printf("\nExit: build_ast_primary");
     return NULL;
 }
 
 AstNodeExpr* build_ast_literal(void) {
-    printf("\nEntry: build_ast_literal");
+    //printf("\nEntry: build_ast_literal");
     Token* token = peekToken();
     if (token == NULL) return NULL;
 
@@ -447,12 +445,12 @@ AstNodeExpr* build_ast_literal(void) {
     }
 
     consumeToken();
-    printf("\nExit: build_ast_literal");
+    //printf("\nExit: build_ast_literal");
     return expr;
 }
 
 AstNodeExpr* build_ast_variable(void) {
-    printf("\nEntry: build_ast_variable");
+    //printf("\nEntry: build_ast_variable");
     Token* token = peekToken();
     if (token == NULL) return NULL;
 
@@ -461,12 +459,12 @@ AstNodeExpr* build_ast_variable(void) {
     expr->as.variable.name = strdup(token->value);
 
     consumeToken();
-    printf("\nExit: build_ast_variable");
+    //printf("\nExit: build_ast_variable");
     return expr;
 }
 
 AstNodeExpr* build_ast_expr(void) {
-    printf("\nEntry: build_ast_expr");
+    //printf("\nEntry: build_ast_expr");
     AstNodeExpr* left = build_ast_primary();
     if (left == NULL) return NULL;
 
@@ -484,6 +482,6 @@ AstNodeExpr* build_ast_expr(void) {
         return binary_expr;
     }
 
-    printf("\nExit: build_ast_expr");
+    //printf("\nExit: build_ast_expr");
     return left;
 }

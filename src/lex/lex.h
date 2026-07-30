@@ -90,9 +90,6 @@ Queue* tokenize(char* expr_str) {
 
         buff[buff_index] = '\0';
 
-        // Cuidado aqui: dependendo de como o seu trim() funciona, 
-        // ele pode remover espaços de DENTRO da string (ex: "hello world" virar "helloworld").
-        // Se o seu trim() apenas remove espaços nas pontas externas, tudo bem.
         trim(buff); 
 
         char type = getType(buff);

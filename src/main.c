@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
     }
     char* content = read_file(argv[1]);
 
-    //char* content = read_file("C:\\Users\\yuri.menezes\\Documents\\docs_yuri\\ypsilon\\samples\\teste.y");
+    //char* content = read_file("C:\\Users\\yuri.menezes\\Documents\\docs_yuri\\ypsilon\\samples\\if.y");
 
     if (content == NULL) {
         fprintf(stderr, "Nao foi possivel ler o arquivo '%s'.\n", argv[1]);
@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
     }
 
     Queue* tokens = tokenize(content);
-    // forEach(tokens, printTokens);
+    forEach(tokens, printTokens);
     AstNodeProg* prog = analyze(tokens);
     printProg(prog);
 

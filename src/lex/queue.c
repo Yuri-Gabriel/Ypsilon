@@ -1,17 +1,11 @@
-#pragma once
+
 
 #include <stdlib.h>
+#include <stdio.h>
 
-#include "token/token.h"
-
-typedef struct Node {
-    Token* value;
-    struct Node* prev;
-} Node;
-
-typedef struct {
-    Node* first;
-} Queue;
+#include "lex/token.h"
+#include "lex/token_types.h"
+#include "lex/queue.h"
 
 Node* create_node(Token* value) {
     Node* node = (Node*) malloc(sizeof(Node));

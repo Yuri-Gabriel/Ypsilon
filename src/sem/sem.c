@@ -2,11 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "../util/utils.h"
-#include "../lex/queue.h"
-#include "../lex/token/token_types.h"
-#include "sem_types.h"
-#include "sem_const_types.h"
+#include "util/util.h"
+#include "lex/queue.h"
+#include "lex/token_types.h"
+#include "sem/sem_types.h"
+#include "sem/sem_const_types.h"
+#include "sem/sem.h"
 
 // --- Variável Global ---
 static Queue* queue = NULL;
@@ -22,23 +23,6 @@ char* assigment_operators[] = {
 char* arithmetic_operators[] = {
     "+", "-", "*", "/", "^"
 };
-
-// --- Protótipos das Funções ---
-AstNodeProg* build_ast_program(void);
-AstNodeBlock* build_ast_else_stmt(void);
-AstNodeStmt* build_ast_statement(void);
-AstNodeStmt* build_ast_assignment(void);
-AstNodeStmt* build_ast_flow_control(void);
-AstNodeStmt* build_ast_if_stmt(void);
-AstNodeStmt* build_ast_while_stmt(void);
-AstNodeStmt* build_ast_define_function_stmt(void);
-AstNodeStmt* build_ast_call_function_stmt(void);
-AstNodeExpr* build_ast_expr(void);
-AstNodeExpr* build_ast_primary(void);
-AstNodeExpr* build_ast_literal(void);
-AstNodeExpr* build_ast_variable(void);
-AstNodeArgFunction* build_ast_arg_function(void);
-AstNodeParamFunction* build_ast_param_function(void);
 
 // --- Navegação na Fila de Tokens ---
 

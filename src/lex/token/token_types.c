@@ -1,11 +1,12 @@
-#pragma once
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
+#include <stdbool.h>
+#include <ctype.h>
 
-#include "../../util/utils.h"
+#include "util/util.h"
+#include "lex/token_types.h"
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 

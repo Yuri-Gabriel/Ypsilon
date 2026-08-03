@@ -1,5 +1,15 @@
 all: 
-	gcc -g src/main.c -o output/main
+	gcc -g -I src/headers \
+      src/main.c \
+      src/lex/lex.c \
+      src/lex/queue.c \
+      src/lex/token/token.c \
+      src/lex/token/token_types.c \
+      src/sem/sem.c \
+      src/sem/sem_types.c \
+      src/util/file_reader.c \
+      src/util/utils.c \
+      -o output/main
 
 ARG := $(word 2, $(MAKECMDGOALS))
 

@@ -1,8 +1,9 @@
-#pragma once
 
+#include <stdio.h>
 #include <string.h>
+#include <stdlib.h> 
 
-#include "utils.h"
+#include "util/util.h"
 
 char* read_file(const char* file_path) {
     if(!endsWith(file_path, ".y")) return NULL;

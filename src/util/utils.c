@@ -1,8 +1,10 @@
-#pragma once
+
 
 #include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 void trim(char* str) {
 

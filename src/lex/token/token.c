@@ -1,12 +1,9 @@
-#pragma once
+
 
 #include <stdlib.h>
-#include "string.h"
+#include <string.h>
 
-typedef struct {
-    char* value;
-    unsigned char type;
-} Token;
+#include "lex/token.h"
 
 Token* create_token(char* value, unsigned char type) {
 

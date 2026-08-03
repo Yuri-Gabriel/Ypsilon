@@ -1,4 +1,4 @@
-#pragma once
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,11 +6,11 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "token/token.h"
-#include "token/token_types.h"
-#include "queue.h"
+#include "lex/token.h"
+#include "lex/token_types.h"
+#include "lex/queue.h"
 
-#include "../util/utils.h"
+#include "util/util.h"
 
 typedef struct {
     Queue* tokens;

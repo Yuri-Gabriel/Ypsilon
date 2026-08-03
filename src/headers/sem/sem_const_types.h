@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SEM_CONST_TYPES_H
+#define SEM_CONST_TYPES_H
 
 // AST Nodes Types
 #define NODE_BASE                               0x01
@@ -53,3 +54,5 @@
 #define VAR_TYPE_NUMBER                         0x01
 #define VAR_TYPE_STRING                         0x02
 #define VAR_TYPE_BOOL                           0x03
+
+#endif

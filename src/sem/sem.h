@@ -38,6 +38,7 @@ AstNodeExpr* build_ast_primary(void);
 AstNodeExpr* build_ast_literal(void);
 AstNodeExpr* build_ast_variable(void);
 AstNodeArgFunction* build_ast_arg_function(void);
+AstNodeParamFunction* build_ast_param_function(void);
 
 // --- Navegação na Fila de Tokens ---
 
@@ -294,6 +295,132 @@ AstNodeStmt* build_ast_while_stmt(void) {
 }
 
 AstNodeStmt* build_ast_define_function_stmt(void) {
+    Token* token = consumeToken();
+
+    if(token == NULL || strcmp(token->value, "function") != 0) {
+        throwError("Expected 'function' keyword", 0);
+    }
+
+    token = peekToken();
+    if(token == NULL || token->type != IDENTIFIER) {
+        throwError("Expected function name after 'function' keyword", 0);
+    }
+
+    AstNodeStmt* stmt = (AstNodeStmt*) malloc(sizeof(AstNodeStmt));
+    stmt->type = STMT_FUNCTION_DEF;
+    stmt->next = NULL;
+
+    AstNodeDefinitionFunction* def_function_stmt = (AstNodeDefinitionFunction*) malloc(sizeof(AstNodeDefinitionFunction));
+    def_function_stmt->name = strdup(token->value);
+    def_function_stmt->params_count = 0;
+    def_function_stmt->params = NULL;
+
+    consumeToken();
+    verifyTokenAndWalk("(");
+    token = peekToken();
+
+    AstNodeParamFunction* current_param = (AstNodeParamFunction*) malloc(sizeof(AstNodeParamFunction));
+
+    char* valid_tokens[] = {",", ")"};
+    while(strcmp(token->value, ")") != 0) {
+        AstNodeParamFunction* param = build_ast_param_function();
+
+        if(param == NULL) {
+            consumeToken();
+            verifyTokenAndWalk(")");
+            break;
+        }
+
+        if(current_param == NULL) {
+            current_param = param;
+        } else {
+            current_param->next = param;
+            current_param = param;
+        }
+
+        def_function_stmt->params_count++;
+        def_function_stmt->params = (AstNodeParamFunction**) realloc(
+            def_function_stmt->params, 
+            sizeof(AstNodeParamFunction*) * def_function_stmt->params_count
+        );
+        def_function_stmt->params[def_function_stmt->params_count - 1] = param;
+        
+        consumeToken();
+        token = peekToken();
+
+        if(!inStringArray(valid_tokens, ARRAY_SIZE(valid_tokens), token->value)) {
+            throwError("Missing ')' or ','", 0);
+        }
+    }
+
+    consumeToken();
+    verifyTokenAndWalk(":");
+
+    token = peekToken();
+
+    if(token == NULL || token->type != TYPE) {
+        throwError("Expected return type after ':'", 0);
+    }
+
+    if(strcmp(token->value, "void") == 0) {
+        def_function_stmt->return_type = TYPE_VOID;
+    } else if(strcmp(token->value, "number") == 0) {
+        def_function_stmt->return_type = TYPE_NUMBER;
+    } else if(strcmp(token->value, "bool") == 0) {
+        def_function_stmt->return_type = TYPE_BOOL;
+    } else if(strcmp(token->value, "string") == 0) {
+        def_function_stmt->return_type = TYPE_STRING;
+    } else {
+        throwError("Invalid return type. Expected 'void', 'number', 'bool', or 'string'", 0);
+    }
+
+    consumeToken();
+    verifyTokenAndWalk("{");
+    token = peekToken();
+
+
+    AstNodeStmt* current_block_stmt = NULL; 
+    AstNodeBlock* block = (AstNodeBlock*) malloc(sizeof(AstNodeBlock));
+    
+    def_function_stmt->return_expr = NULL;
+    
+    block->stmts = NULL;
+    block->stmts_count = 0;
+    while (token != NULL || strcmp(token->value, "}") != 0) {
+
+        if(token != NULL && strcmp(token->value, "return") == 0) {
+            consumeToken(); 
+            def_function_stmt->return_expr = build_ast_expr();
+            verifySemiColon();
+            break;
+        }
+
+        AstNodeStmt* block_stmt = build_ast_statement();
+        if (block_stmt == NULL) break;
+
+        if (current_block_stmt == NULL) {
+            current_block_stmt = block_stmt;
+        } else {
+            current_block_stmt->next = block_stmt;
+            current_block_stmt = block_stmt;
+        }
+
+        block->stmts_count++;
+        block->stmts = (AstNodeStmt**) realloc(block->stmts, sizeof(AstNodeStmt*) * block->stmts_count);
+        block->stmts[block->stmts_count - 1] = block_stmt;
+
+        token = peekToken();
+
+        
+    }
+
+    def_function_stmt->block = block;
+    stmt->as.def_function_stmt = *def_function_stmt;
+
+    verifyTokenAndWalk("}");
+    
+    return stmt;
+
 
 }
 
@@ -317,7 +444,7 @@ AstNodeStmt* build_ast_call_function_stmt(void) {
     stmt->type = STMT_FUNCTION_CALL;
     stmt->next = NULL;
 
-    stmt->as.call_function_stmt.name = func_name;
+    stmt->as.call_function_stmt.name = strdup(func_name);
     stmt->as.call_function_stmt.args_count = 0;
     stmt->as.call_function_stmt.args = NULL;
 
@@ -365,6 +492,39 @@ AstNodeArgFunction* build_ast_arg_function(void) {
 
     //printf("\nExit: build_ast_arg_function");
     return arg;
+}
+
+AstNodeParamFunction* build_ast_param_function(void) {
+    //printf("\nEntry: build_ast_param_function");
+    Token* token = peekToken();
+    if(token == NULL) return NULL;
+
+    if(token->type != TYPE) {
+        throwError("Expected type for function parameter", 0);
+    }
+
+    AstNodeParamFunction* param = (AstNodeParamFunction*) malloc(sizeof(AstNodeParamFunction));
+    if(strcmp(token->value, "string") == 0) {
+        param->var_type = TYPE_STRING;
+    } else if(strcmp(token->value, "number") == 0) {
+        param->var_type = TYPE_NUMBER;
+    } else if(strcmp(token->value, "bool") == 0) {
+        param->var_type = TYPE_BOOL;
+    } else {
+        throwError("Invalid type for function parameter. Expected 'string', 'number', or 'bool'", 0);
+    }
+
+    consumeToken(); 
+    token = peekToken();
+
+    if(token == NULL || token->type != IDENTIFIER) {
+        throwError("Expected identifier for function parameter", 0);
+    }
+
+    param->var_name = strdup(token->value);
+
+    //printf("\nExit: build_ast_param_function");
+    return param;
 }
 
 AstNodeStmt* build_ast_assignment(void) {
@@ -437,11 +597,11 @@ AstNodeExpr* build_ast_literal(void) {
     expr->as.literal.value = strdup(token->value);
 
     if (startsWith(token->value, "\"") && endsWith(token->value, "\"")) {
-        expr->as.literal.type = LITERAL_STR;
+        expr->as.literal.type = TYPE_STRING;
     } else if (isNumber(token->value) != 0) {
-        expr->as.literal.type = LITERAL_NUMBER;
+        expr->as.literal.type = TYPE_NUMBER;
     } else if (strcmp(token->value, "true") == 0 || strcmp(token->value, "false") == 0) {
-        expr->as.literal.type = LITERAL_BOOL;
+        expr->as.literal.type = TYPE_BOOL;
     }
 
     consumeToken();

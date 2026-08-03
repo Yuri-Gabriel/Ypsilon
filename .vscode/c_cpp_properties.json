@@ -6,9 +6,9 @@
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/src"
             ],
-            "compilerPath": "C:/mingw64/bin/gcc.exe",
+            "compilerPath": "/usr/bin/gcc",
             "cStandard": "c11",
-            "intelliSenseMode": "windows-gcc-x64"
+            "intelliSenseMode": "linux-gcc-x64"
         }
     ],
     "version": 4

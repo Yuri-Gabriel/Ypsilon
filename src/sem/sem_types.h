@@ -4,10 +4,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// --- ENUMS DE TIPO ---
+// --- CONSTANTES DE TIPO ---
 #define LITERAL_STR         0x01
 #define LITERAL_NUMBER      0x02
 #define LITERAL_BOOL        0x03
+
+#define TYPE_VOID    0x01
+#define TYPE_NUMBER  0x02
+#define TYPE_BOOL    0x03
+#define TYPE_STRING  0x04
 
 #define EXPR_LITERAL        0x01
 #define EXPR_VARIABLE       0x02
@@ -55,6 +60,12 @@ typedef struct AstNodeArgFunction {
     struct AstNodeArgFunction* next;
 } AstNodeArgFunction;
 
+typedef struct AstNodeParamFunction {
+    int var_type; 
+    char* var_name;
+    struct AstNodeParamFunction* next;
+} AstNodeParamFunction;
+
 // --- INSTRUÇÕES / STATEMENTS (Ações do programa) ---
 
 typedef struct {
@@ -88,10 +99,11 @@ typedef struct {
 
 typedef struct {
     char* name;
-    AstNodeArgFunction** args;
-    int args_count;
+    AstNodeParamFunction** params;
+    int params_count;
     AstNodeBlock* block;
     AstNodeExpr* return_expr;
+    int return_type;
 } AstNodeDefinitionFunction;
 
 struct AstNodeStmt {
@@ -237,13 +249,22 @@ void printStmt(AstNodeStmt *stmt, int level) {
         printf("|____name = %s\n", stmt->as.def_function_stmt.name ? stmt->as.def_function_stmt.name : "NULL");
 
         print_indent(level + 2);
-        printf("|____args_count = %d\n", stmt->as.def_function_stmt.args_count);
+        printf("|____params_count = %d\n", stmt->as.def_function_stmt.params_count);
 
-        for (int i = 0; i < stmt->as.def_function_stmt.args_count; i++) {
+        for (int i = 0; i < stmt->as.def_function_stmt.params_count; i++) {
             print_indent(level + 2);
-            printf("|____arg[%d]:\n", i);
-            if (stmt->as.def_function_stmt.args && stmt->as.def_function_stmt.args[i]) {
-                printExpr(stmt->as.def_function_stmt.args[i]->expr, level + 3);
+            printf("|____param[%d]:\n", i);
+            if (stmt->as.def_function_stmt.params && stmt->as.def_function_stmt.params[i]) {
+                print_indent(level + 2);
+                printf("|____param:\n");
+
+                print_indent(level + 3);
+                printf("|____type = %s\n",
+                    literalTypeToString(stmt->as.def_function_stmt.params[i]->var_type));
+
+                print_indent(level + 3);
+                printf("|____name = %s\n",
+                    stmt->as.def_function_stmt.params[i]->var_name);
             } else {
                 print_indent(level + 3);
                 printf("|____NULL\n");
@@ -303,10 +324,10 @@ const char *exprTypeToString(char type) {
 
 const char *literalTypeToString(char type) {
     switch (type) {
-        case LITERAL_STR:    return "STRING";
-        case LITERAL_NUMBER: return "NUMBER";
-        case LITERAL_BOOL:   return "BOOL";
-        default:             return "UNKNOWN";
+        case TYPE_STRING:       return "STRING";
+        case TYPE_NUMBER:       return "NUMBER";
+        case TYPE_BOOL:         return "BOOL";
+        default:                return "UNKNOWN";
     }
 }
 

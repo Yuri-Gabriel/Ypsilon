@@ -3,7 +3,6 @@ all:
 
 ARG := $(word 2, $(MAKECMDGOALS))
 
-# Regra 'fantasma' para evitar o erro "No rule to make target"
 ifneq ($(ARG),)
   $(eval $(ARG):;@:)
 endif
@@ -25,6 +24,10 @@ else ifeq ($(ARG),4)
 	@echo "=> Iniciando teste em: call_function.y" 
 	output/main samples/call_function.y
 	@echo "=> Teste finalizando em: call_function.y" 
+else ifeq ($(ARG),5)
+	@echo "=> Iniciando teste em: define_function.y" 
+	output/main samples/define_function.y
+	@echo "=> Teste finalizando em: define_function.y" 
 else
 	@echo "Opção inválida ou ausente!"
 	@echo "Uso correto: make run [1|2|3]"

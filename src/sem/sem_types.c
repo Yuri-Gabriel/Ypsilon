@@ -4,16 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
-static void print_indent(int level);
-void printProg(AstNodeProg *prog);
-const char *stmtTypeToString(char type);
-void printBlock(AstNodeBlock *block, int level);
-void printStmt(AstNodeStmt *stmt, int level);
-const char *exprTypeToString(char type);
-const char *literalTypeToString(char type);
-void printExpr(AstNodeExpr *expr, int level);
-
 static void print_indent(int level) {
     for (int i = 0; i < level; i++)
         printf("   ");
@@ -32,6 +22,7 @@ void printProg(AstNodeProg *prog) {
 
     for (int i = 0; i < prog->stmts_count; i++) {
         printStmt(prog->stmts[i], 1);
+        
     }
 }
 
@@ -188,9 +179,9 @@ void printStmt(AstNodeStmt *stmt, int level) {
         break;
     }
 
-    print_indent(level + 1);
-    printf("|____next:\n");
-    printStmt(stmt->next, level + 2);
+    // print_indent(level + 1);
+    // printf("|____next:\n");
+    // printStmt(stmt->next, level + 2);
 }
 
 const char *exprTypeToString(char type) {

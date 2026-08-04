@@ -16,6 +16,7 @@ int main(int argc, char *argv[]) {
     }
     char* content = read_file(argv[1]);
 
+    // char* content = read_file("/mnt/c/Users/yuri.menezes/Documents/docs_yuri/ypsilon/samples/variable.y");
     // char* content = read_file("/home/yuri/Documentos/projetos/Ypsilon/samples/define_function.y");
 
     if (content == NULL) {

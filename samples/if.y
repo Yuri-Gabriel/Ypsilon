@@ -7,5 +7,5 @@ if(verdade == true) {
 if(msg == "teste" && msg) {
     msg = "";
 } else {
-    
+    var = "teste";
 }

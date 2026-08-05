@@ -95,11 +95,19 @@ typedef struct {
 } AstNodeCallFunction;
 
 typedef struct {
+    int return_type;
+    union {
+        AstNodeExpr expr;
+        AstNodeCallFunction call;
+    } as;
+} AstNodeReturn;
+
+typedef struct {
     char* name;
     AstNodeParamFunction** params;
     int params_count;
     AstNodeBlock* block;
-    AstNodeExpr* return_expr;
+    AstNodeReturn* _return;
     int return_type;
 } AstNodeDefinitionFunction;
 
@@ -129,5 +137,6 @@ void printStmt(AstNodeStmt *stmt, int level);
 const char *exprTypeToString(char type);
 const char *literalTypeToString(char type);
 void printExpr(AstNodeExpr *expr, int level);
+void printReturn(AstNodeReturn *ret, int level);
 
 #endif

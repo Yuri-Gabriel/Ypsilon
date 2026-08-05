@@ -14,6 +14,7 @@ AstNodeStmt* build_ast_if_stmt(void);
 AstNodeStmt* build_ast_while_stmt(void);
 AstNodeStmt* build_ast_define_function_stmt(void);
 AstNodeStmt* build_ast_call_function_stmt(void);
+AstNodeReturn* build_ast_return(void);
 AstNodeExpr* build_ast_expr(void);
 AstNodeExpr* build_ast_primary(void);
 AstNodeExpr* build_ast_literal(void);

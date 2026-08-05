@@ -20,7 +20,7 @@
 
 // KEYWORD
 char* keywords[] = {
-    "while", "if", "else", "function"
+    "while", "if", "else", "function", "return"
 };
 
 bool isKeyword(char* text) {
@@ -102,7 +102,7 @@ bool isPunctuator(char text) {
 //TYPE
 
 char* types[] = {
-    "number", "string", "bool"
+    "number", "string", "bool", "void"
 };
 
 bool isType(char* text) {

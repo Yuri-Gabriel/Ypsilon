@@ -147,8 +147,8 @@ void printStmt(AstNodeStmt *stmt, int level) {
         printBlock(stmt->as.def_function_stmt.block, level + 3);
 
         print_indent(level + 2);
-        printf("|____return_expr:\n");
-        printExpr(stmt->as.def_function_stmt.return_expr, level + 3);
+        printf("|____return_stmt:\n");
+        printReturn(stmt->as.def_function_stmt._return, level + 3);
         break;
 
     case STMT_FUNCTION_CALL:
@@ -258,5 +258,58 @@ void printExpr(AstNodeExpr *expr, int level) {
         printf("|____right:\n");
         printExpr(expr->as.binary.right, level + 4);
         break;
+    }
+}
+
+void printReturn(AstNodeReturn *ret, int level) {
+    if (!ret) {
+        print_indent(level);
+        printf("|____NULL\n");
+        return;
+    }
+
+    print_indent(level);
+    printf("|____AstNodeReturn:\n");
+
+    print_indent(level + 1);
+    printf("|____return_type = %s\n",
+           literalTypeToString(ret->return_type));
+
+    print_indent(level + 1);
+    printf("|____as:\n");
+
+    if (ret->return_type >= TYPE_VOID && ret->return_type <= TYPE_STRING) {
+        print_indent(level + 2);
+        printf("|____expression (return_type defined):\n");
+        printExpr(&ret->as.expr, level + 3);
+    } else if (ret->return_type == 0) {
+        print_indent(level + 2);
+        printf("|____trying expression (type unknown):\n");
+        printExpr(&ret->as.expr, level + 3);
+    } else {
+        print_indent(level + 2);
+        printf("|____call_function (return_type = %d):\n", ret->return_type);
+
+        print_indent(level + 3);
+        printf("|____name = %s\n",
+               ret->as.call.name ? ret->as.call.name : "NULL");
+
+        print_indent(level + 3);
+        printf("|____args_count = %d\n", ret->as.call.args_count);
+
+        if (ret->as.call.args_count > 0 && ret->as.call.args) {
+            for (int i = 0; i < ret->as.call.args_count; i++) {
+                if (ret->as.call.args[i]) {
+                    print_indent(level + 3);
+                    printf("|____arg[%d]:\n", i);
+                    if (ret->as.call.args[i]->expr) {
+                        printExpr(ret->as.call.args[i]->expr, level + 4);
+                    } else {
+                        print_indent(level + 4);
+                        printf("|____NULL\n");
+                    }
+                }
+            }
+        }
     }
 }

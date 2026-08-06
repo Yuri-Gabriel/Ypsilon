@@ -21,6 +21,7 @@
 #define STMT_BLOCK          0x04
 #define STMT_FUNCTION_DEF   0x05
 #define STMT_FUNCTION_CALL  0x06
+#define STMT_RETURN         0x07
 
 // --- DECLARAÇÕES ANTECIPADAS ---
 typedef struct AstNodeExpr AstNodeExpr;
@@ -107,7 +108,6 @@ typedef struct {
     AstNodeParamFunction** params;
     int params_count;
     AstNodeBlock* block;
-    AstNodeReturn* _return;
     int return_type;
 } AstNodeDefinitionFunction;
 
@@ -120,6 +120,7 @@ struct AstNodeStmt {
         AstNodeWhile while_stmt;
         AstNodeCallFunction call_function_stmt;
         AstNodeDefinitionFunction def_function_stmt;
+        AstNodeReturn return_stmt;
     } as;
 };
 

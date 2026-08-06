@@ -34,6 +34,7 @@ const char *stmtTypeToString(char type) {
         case STMT_FUNCTION_DEF:     return "FUNCTION_DEF";
         case STMT_FUNCTION_CALL:    return "FUNCTION_CALL";
         case STMT_BLOCK:            return "BLOCK";
+        case STMT_RETURN:           return "RETURN";
         default:                    return "UNKNOWN";
     }
 }
@@ -145,10 +146,6 @@ void printStmt(AstNodeStmt *stmt, int level) {
         print_indent(level + 2);
         printf("|____block:\n");
         printBlock(stmt->as.def_function_stmt.block, level + 3);
-
-        print_indent(level + 2);
-        printf("|____return_stmt:\n");
-        printReturn(stmt->as.def_function_stmt._return, level + 3);
         break;
 
     case STMT_FUNCTION_CALL:
@@ -174,6 +171,11 @@ void printStmt(AstNodeStmt *stmt, int level) {
             current_arg = current_arg->next;
         }
         break;
+    case STMT_RETURN:
+        print_indent(level + 2);
+        printf("|____return_stmt:\n");
+        printReturn(&stmt->as.return_stmt, level + 3);
+        break;
 
     default:
         break;
@@ -198,6 +200,7 @@ const char *literalTypeToString(char type) {
         case TYPE_STRING:       return "STRING";
         case TYPE_NUMBER:       return "NUMBER";
         case TYPE_BOOL:         return "BOOL";
+        case TYPE_VOID:         return "VOID";
         default:                return "UNKNOWN";
     }
 }
@@ -280,6 +283,10 @@ void printReturn(AstNodeReturn *ret, int level) {
 
     if (ret->return_type >= TYPE_VOID && ret->return_type <= TYPE_STRING) {
         print_indent(level + 2);
+        if(ret->return_type == TYPE_VOID) {
+            printf("|____NULL:\n");
+            return;
+        }
         printf("|____expression (return_type defined):\n");
         printExpr(&ret->as.expr, level + 3);
     } else if (ret->return_type == 0) {

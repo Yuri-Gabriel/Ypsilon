@@ -2,22 +2,27 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug C (Debian Linux)",
+            "name": "Debug C (WSL)",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/output/main",
             "args": ["samples/define_function.y"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
+            "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
-            "miDebuggerPath": "/usr/bin/gdb",
-            "preLaunchTask": "build",
+            "console": "integratedTerminal",
             "setupCommands": [
                 {
-                    "description": "Enable pretty-printing",
+                    "description": "Enable pretty-printing for gdb",
                     "text": "-enable-pretty-printing",
-                    "ignoreFailures": false
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Disable debuginfod",
+                    "text": "set debuginfod enabled off",
+                    "ignoreFailures": true
                 }
             ]
         }

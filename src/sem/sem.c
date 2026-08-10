@@ -124,8 +124,6 @@ AstNodeStmt* build_ast_statement(void) {
 
     AstNodeStmt* stmt = NULL;
 
-    printf("\n value: %s type: %d \n ", token->value, token->type);
-
     if (token->type == TYPE) {
         stmt = build_ast_assignment();
         verifySemiColon();
@@ -135,9 +133,6 @@ AstNodeStmt* build_ast_statement(void) {
     } else if (token->type == KEYWORD) {
         stmt = build_ast_flow_control();
     } 
-
-    printf("\n stmt: %p \n", stmt);
-    printf("\n stmt type: %d \n", stmt->type);
 
     printf("\nExit: build_ast_statement");
     return stmt;
@@ -149,19 +144,20 @@ AstNodeStmt* build_ast_flow_control(void) {
     if (token == NULL) return NULL;
     
     if (strcmp(token->value, "if") == 0) {
-        printf("\nExit: build_ast_flow_control");
+        printf("\nExit: build_ast_flow_control - if");
         return build_ast_if_stmt();
     } else if (strcmp(token->value, "while") == 0) {
-        printf("\nExit: build_ast_flow_control");
+        printf("\nExit: build_ast_flow_control - while");
         return build_ast_while_stmt();
     } else if(strcmp(token->value, "function") == 0) {
-        printf("\nExit: build_ast_flow_control");
+        printf("\nExit: build_ast_flow_control - function");
         return build_ast_define_function_stmt();
     } else if(strcmp(token->value, "return") == 0) {
+        printf("\nExit: build_ast_flow_control - return");
         return build_ast_return();
     }
 
-    printf("\nExit: build_ast_flow_control");
+    printf("\nExit: build_ast_flow_control - NULL");
     return NULL;
 }
 
@@ -440,6 +436,7 @@ AstNodeStmt* build_ast_return(void) {
 
     if(strcmp(token->value, ";") == 0) {
         printf("\nExit: build_ast_return NULL");
+        consumeToken();
         stmt->as.return_stmt = *return_stmt;
         return stmt;
     }
@@ -455,9 +452,9 @@ AstNodeStmt* build_ast_return(void) {
     if(token->type == IDENTIFIER && strcmp(node->prev->value->value, "(") == 0) {
         AstNodeStmt* call_func_stmt = build_ast_call_function_stmt();
         if(stmt == NULL) throwError(errorMensage, 0);
-        return_stmt->as.call = stmt->as.call_function_stmt;
-        return_stmt->return_type = 0;
-        free(stmt);
+        return_stmt->as.call = call_func_stmt->as.call_function_stmt;
+        return_stmt->return_type = RETURN_TYPE_CALL;
+        free(call_func_stmt);
         stmt->as.return_stmt = *return_stmt;
     } else if(
         token->type == LITERAL
@@ -466,11 +463,7 @@ AstNodeStmt* build_ast_return(void) {
     ) {
         AstNodeExpr* expr = build_ast_expr();
         if(expr == NULL) throwError(errorMensage, 0);
-        if(expr->type == EXPR_LITERAL) {
-            return_stmt->return_type = expr->as.literal.type;
-        } else {
-            return_stmt->return_type = 0;
-        }
+        return_stmt->return_type = RETURN_TYPE_EXPR;
         
         return_stmt->as.expr = *expr;
         free(expr);
@@ -478,6 +471,7 @@ AstNodeStmt* build_ast_return(void) {
     }
 
     free(return_stmt);
+    consumeToken();
     printf("\nExit: build_ast_return"); 
     return stmt;
 }
@@ -535,6 +529,11 @@ AstNodeStmt* build_ast_call_function_stmt(void) {
         }
     }
 
+    Token* t = peekToken();
+    printf("\n------------- build_ast_call_function_stmt: %s", t->value);
+    consumeToken();
+    t = peekToken();
+    printf("\n------------- build_ast_call_function_stmt: %s", t->value);
     printf("\nExit: build_ast_call_function_stmt");
     return stmt;
 
@@ -632,9 +631,9 @@ AstNodeStmt* build_ast_assignment(void) {
 AstNodeExpr* build_ast_primary(void) {
     printf("\nEntry: build_ast_primary");
     Token* token = peekToken();
-    printf("\nbuild_ast_expr token: %p\n", token);
+
     if (token == NULL) return NULL;
-    printf("\nbuild_ast_expr token_value: %s\n", token->value);
+
 
     if (token->type == LITERAL) {
         printf("\nExit: 1 build_ast_primary");

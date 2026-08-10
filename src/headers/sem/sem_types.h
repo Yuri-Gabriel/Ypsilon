@@ -11,6 +11,9 @@
 #define TYPE_BOOL           0x03
 #define TYPE_STRING         0x04
 
+#define RETURN_TYPE_CALL    0x01
+#define RETURN_TYPE_EXPR    0x02
+
 #define EXPR_LITERAL        0x01
 #define EXPR_VARIABLE       0x02
 #define EXPR_BINARY         0x03

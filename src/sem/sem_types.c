@@ -281,7 +281,7 @@ void printReturn(AstNodeReturn *ret, int level) {
     print_indent(level + 1);
     printf("|____as:\n");
 
-    if (ret->return_type >= TYPE_VOID && ret->return_type <= TYPE_STRING) {
+    if (ret->return_type == RETURN_TYPE_EXPR) {
         print_indent(level + 2);
         if(ret->return_type == TYPE_VOID) {
             printf("|____NULL:\n");
@@ -289,11 +289,7 @@ void printReturn(AstNodeReturn *ret, int level) {
         }
         printf("|____expression (return_type defined):\n");
         printExpr(&ret->as.expr, level + 3);
-    } else if (ret->return_type == 0) {
-        print_indent(level + 2);
-        printf("|____trying expression (type unknown):\n");
-        printExpr(&ret->as.expr, level + 3);
-    } else {
+    } else if (ret->return_type == RETURN_TYPE_CALL) {
         print_indent(level + 2);
         printf("|____call_function (return_type = %d):\n", ret->return_type);
 

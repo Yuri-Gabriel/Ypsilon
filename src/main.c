@@ -10,13 +10,13 @@
 #include <stdio.h>
 
 int main(int argc, char *argv[]) {
-    // if (argc < 2) {
-    //     fprintf(stderr, "Uso: %s <arquivo.y>\n", argv[0]);
-    //     return 1;
-    // }
-    // char* content = read_file(argv[1]);
+    if (argc < 2) {
+        fprintf(stderr, "Uso: %s <arquivo.y>\n", argv[0]);
+        return 1;
+    }
+    char* content = read_file(argv[1]);
 
-    char* content = read_file("/mnt/c/Users/yuri.menezes/Documents/docs_yuri/ypsilon/samples/define_function.y");
+    // char* content = read_file("/mnt/c/Users/yuri.menezes/Documents/docs_yuri/ypsilon/samples/define_function.y");
     // char* content = read_file("/home/yuri/Documentos/projetos/Ypsilon/samples/define_function.y");
 
     if (content == NULL) {

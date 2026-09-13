@@ -18,7 +18,7 @@ typedef struct {
     unsigned long expr_length;
     unsigned long char_index;
 
-    char expr[0x400];
+    char* expr;
 } Lex;
 
 char peek(Lex* l) {
@@ -33,8 +33,7 @@ Queue* tokenize(char* expr_str) {
     Lex* lex = (Lex*) malloc(sizeof(Lex));
 
     lex->tokens = create_queue();
-
-    strcpy(lex->expr, expr_str);
+    lex->expr = expr_str;
 
     lex->expr_length = strlen(lex->expr);
     lex->char_index = 0;

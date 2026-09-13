@@ -65,7 +65,7 @@ Token* consumeToken(void) {
 // --- Verificações ---
 
 void verifyTokenAndWalk(char* token_str) {
-    //printf("\nEntry: verifyTokenAndWalk");
+    printf("\nEntry: verifyTokenAndWalk");
     Token* token = peekToken();
     //printf("\n[verifyTokenAndWalk] Token value: %s | value verified: %s\n", token->value, token_str);
     if (token == NULL || strcmp(token->value, token_str) != 0) {
@@ -74,7 +74,7 @@ void verifyTokenAndWalk(char* token_str) {
         throwError(message, 0);
     }
     consumeToken();
-    //printf("\nExit: verifyTokenAndWalk");
+    printf("\nExit: verifyTokenAndWalk");
 }
 
 void verifySemiColon(void) {
@@ -221,7 +221,7 @@ AstNodeBlock* build_ast_else_stmt(void) {
     printf("\n 2 else aquiii\n");
     if (token == NULL) return NULL;
 
-    consumeToken();
+    // consumeToken();
 
     verifyTokenAndWalk("{");
 
@@ -422,8 +422,7 @@ AstNodeStmt* build_ast_define_function_stmt(void) {
 AstNodeStmt* build_ast_return(void) {
     printf("\nEntry: build_ast_return");
 
-    consumeToken();
-
+    consumeNode();
     Node* node = peekNode();
     Token* token = node->value;
 
@@ -471,14 +470,14 @@ AstNodeStmt* build_ast_return(void) {
     }
 
     free(return_stmt);
-    consumeToken();
-    printf("\nExit: build_ast_return"); 
+    Token* t = consumeToken();
+    printf("\nExit: build_ast_return -> %s", t->value); 
     return stmt;
 }
 
 AstNodeStmt* build_ast_call_function_stmt(void) {
     printf("\nEntry: build_ast_call_function_stmt");
-    Node* node = peekNode();
+    Node* node = consumeNode();
     if (node == NULL) return NULL;
     if (node->prev == NULL) return NULL;
 
@@ -487,9 +486,6 @@ AstNodeStmt* build_ast_call_function_stmt(void) {
     }
 
     char* func_name = node->value->value;
-    consumeToken();
-
-    Token* vtoken = peekToken();
 
     verifyTokenAndWalk("(");
 
@@ -529,12 +525,11 @@ AstNodeStmt* build_ast_call_function_stmt(void) {
         }
     }
 
-    Token* t = peekToken();
-    printf("\n------------- build_ast_call_function_stmt: %s", t->value);
-    consumeToken();
-    t = peekToken();
-    printf("\n------------- build_ast_call_function_stmt: %s", t->value);
-    printf("\nExit: build_ast_call_function_stmt");
+    // Token* t = peekToken();
+    // printf("\n------------- build_ast_call_function_stmt: %s", t->value);
+    // t = consumeToken();
+    // printf("\n------------- build_ast_call_function_stmt: %s", t->value);
+    // printf("\nExit: build_ast_call_function_stmt");
     return stmt;
 
 }

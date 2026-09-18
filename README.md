@@ -216,12 +216,3 @@ O projeto ainda está em fase inicial e há algumas limitações conhecidas:
 
 O objetivo do Ypsilon é servir como base para a criação de um compilador para uma linguagem própria, começando com as fases fundamentais da compilação: leitura, tokenização, análise sintática/semântica e representação interna do programa.
 
-## Contribuição
-
-Se você quiser evoluir o projeto, pode começar por:
-
-- melhorar o reconhecimento de tokens;
-- ampliar a análise semântica;
-- adicionar suporte a mais instruções e operadores;
-- implementar geração de código ou execução da linguagem.
-

@@ -1,7 +1,5 @@
 # Ypsilon
 
-Ypsilon é um compilador experimental escrito em C para uma linguagem própria com extensão `.y`. O projeto está em evolução e atualmente cobre as fases de leitura do código-fonte, análise léxica, construção de AST e análise semântica básica.
-
 ## Status atual
 
 O projeto já implementa as seguintes etapas:

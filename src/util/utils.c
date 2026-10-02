@@ -5,6 +5,23 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <stdarg.h>
+
+#include "util/util.h"
+
+__int8_t DEBUG_ON = 0;
+
+void debug(const char *__restrict__ __format, ...) {
+    if (DEBUG_ON < 1) return;
+
+    va_list args;
+    va_start(args, __format);
+    printf("\n");
+    vprintf(__format, args);
+    printf("\n");
+    va_end(args);
+}
 
 void trim(char* str) {
 

@@ -8,16 +8,6 @@
 #include "util/util.h"
 #include "lex/token_types.h"
 
-#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
-
-#define UNKNOWN     0x00
-#define KEYWORD     0x01
-#define IDENTIFIER  0x02
-#define OPERATOR    0x03
-#define LITERAL     0x04
-#define PUNCTUATOR  0x05
-#define TYPE        0x06
-
 // KEYWORD
 char* keywords[] = {
     "while", "if", "else", "function", "return"

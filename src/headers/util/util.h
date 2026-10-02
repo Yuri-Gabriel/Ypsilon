@@ -2,7 +2,11 @@
 #define UTIL_H
 
 #include <stdbool.h>
+#include <inttypes.h>
 
+extern __int8_t DEBUG_ON;
+
+void debug(const char *__restrict__ __format, ...);
 void trim(char* str);
 bool isNumber(const char* str);
 bool isEmpty(char c);

@@ -6,18 +6,23 @@
 #include "sem/sem.h"
 
 #include "util/file_reader.h"
+#include "util/util.h"
 
 #include <stdio.h>
+#include <string.h>
 
 int main(int argc, char *argv[]) {
+
+    if (argc >= 3 && strcmp(argv[2], "-dbg") == 0) {
+        DEBUG_ON = 1;
+    }
+    
     if (argc < 2) {
         fprintf(stderr, "Uso: %s <arquivo.y>\n", argv[0]);
         return 1;
     }
-    char* content = read_file(argv[1]);
 
-    // char* content = read_file("/mnt/c/Users/yuri.menezes/Documents/docs_yuri/ypsilon/samples/define_function.y");
-    // char* content = read_file("/home/yuri/Documentos/projetos/Ypsilon/samples/define_function.y");
+    char* content = read_file(argv[1]);
 
     if (content == NULL) {
         fprintf(stderr, "Nao foi possivel ler o arquivo '%s'.\n", argv[1]);

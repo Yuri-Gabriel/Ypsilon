@@ -477,7 +477,7 @@ AstNodeStmt* build_ast_return(void) {
 
 AstNodeStmt* build_ast_call_function_stmt(void) {
     debug("\nEntry: build_ast_call_function_stmt");
-    Node* node = consumeNode();
+    Node* node = peekNode();
     if (node == NULL) return NULL;
     if (node->prev == NULL) return NULL;
 
@@ -485,6 +485,7 @@ AstNodeStmt* build_ast_call_function_stmt(void) {
         return build_ast_assignment();
     }
 
+    consumeNode();
     char* func_name = node->value->value;
 
     verifyTokenAndWalk("(");

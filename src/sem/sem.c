@@ -28,13 +28,13 @@ char* arithmetic_operators[] = {
 
 Token* peekToken(void) {
     if (queue == NULL || queue->first == NULL) return NULL;
-    debug("\n[peekToken] Token value: %s\n", queue->first->value->value);
+    debug("[peekToken] Token value: %s", queue->first->value->value);
     return (Token*) queue->first->value;
 }
 
 Node* peekNode(void) {
     if (queue == NULL || queue->first == NULL) return NULL;
-    debug("\n[peekNode] Node value: %s\n", queue->first->value->value);
+    debug("[peekNode] Node value: %s", queue->first->value->value);
     return (Node*) queue->first;
 }
 
@@ -44,7 +44,7 @@ Node* consumeNode(void) {
     Node* consumed = (Node*) queue->first;
     queue->first = queue->first->prev; 
     if(queue->first != NULL) {
-        debug("\n[consumeNode] Node value: %s -> %s\n", consumed->value->value, queue->first->value->value);
+        debug("[consumeNode] Node value: %s -> %s", consumed->value->value, queue->first->value->value);
     }
     
     return consumed;
@@ -56,7 +56,7 @@ Token* consumeToken(void) {
     Token* consumed = (Token*) queue->first->value;
     queue->first = queue->first->prev; 
     if(queue->first != NULL) {
-        debug("\n[consumeToken] Token value: %s -> %s\n", consumed->value, queue->first->value->value);
+        debug("[consumeToken] Token value: %s -> %s", consumed->value, queue->first->value->value);
     }
     
     return consumed;
@@ -65,16 +65,16 @@ Token* consumeToken(void) {
 // --- Verificações ---
 
 void verifyTokenAndWalk(char* token_str) {
-    debug("\nEntry: verifyTokenAndWalk");
+    debug("Entry: verifyTokenAndWalk");
     Token* token = peekToken();
-    //debug("\n[verifyTokenAndWalk] Token value: %s | value verified: %s\n", token->value, token_str);
+    //debug("[verifyTokenAndWalk] Token value: %s | value verified: %s", token->value, token_str);
     if (token == NULL || strcmp(token->value, token_str) != 0) {
         char message[0x100];
         snprintf(message, sizeof(message), "Missing '%s'", token_str);
         throwError(message, 0);
     }
     consumeToken();
-    debug("\nExit: verifyTokenAndWalk");
+    debug("Exit: verifyTokenAndWalk");
 }
 
 void verifySemiColon(void) {
@@ -90,7 +90,7 @@ AstNodeProg* analyze(Queue* tokens) {
 // --- Construção dos Nós da AST ---
 
 AstNodeProg* build_ast_program(void) {
-    debug("\nEntry: build_ast_program");
+    debug("Entry: build_ast_program");
     AstNodeProg* prog = (AstNodeProg*) malloc(sizeof(AstNodeProg));
     prog->stmts = NULL;
     prog->stmts_count = 0;
@@ -113,12 +113,12 @@ AstNodeProg* build_ast_program(void) {
         prog->stmts[prog->stmts_count - 1] = stmt;
     }
 
-    debug("\nExit: build_ast_program");
+    debug("Exit: build_ast_program");
     return prog;
 }
 
 AstNodeStmt* build_ast_statement(void) {
-    debug("\nEntry: build_ast_statement");
+    debug("Entry: build_ast_statement");
     Token* token = peekToken();
     if (token == NULL) return NULL;
 
@@ -134,35 +134,35 @@ AstNodeStmt* build_ast_statement(void) {
         stmt = build_ast_flow_control();
     } 
 
-    debug("\nExit: build_ast_statement");
+    debug("Exit: build_ast_statement");
     return stmt;
 }
 
 AstNodeStmt* build_ast_flow_control(void) {
-    debug("\nEntry: build_ast_flow_control");
+    debug("Entry: build_ast_flow_control");
     Token* token = peekToken();
     if (token == NULL) return NULL;
     
     if (strcmp(token->value, "if") == 0) {
-        debug("\nExit: build_ast_flow_control - if");
+        debug("Exit: build_ast_flow_control - if");
         return build_ast_if_stmt();
     } else if (strcmp(token->value, "while") == 0) {
-        debug("\nExit: build_ast_flow_control - while");
+        debug("Exit: build_ast_flow_control - while");
         return build_ast_while_stmt();
     } else if(strcmp(token->value, "function") == 0) {
-        debug("\nExit: build_ast_flow_control - function");
+        debug("Exit: build_ast_flow_control - function");
         return build_ast_define_function_stmt();
     } else if(strcmp(token->value, "return") == 0) {
-        debug("\nExit: build_ast_flow_control - return");
+        debug("Exit: build_ast_flow_control - return");
         return build_ast_return();
     }
 
-    debug("\nExit: build_ast_flow_control - NULL");
+    debug("Exit: build_ast_flow_control - NULL");
     return NULL;
 }
 
 AstNodeStmt* build_ast_if_stmt(void) {
-    debug("\nEntry: build_ast_if_stmt");
+    debug("Entry: build_ast_if_stmt");
     consumeToken(); // Consome o 'if'
     verifyTokenAndWalk("(");
 
@@ -210,15 +210,15 @@ AstNodeStmt* build_ast_if_stmt(void) {
         stmt->as.if_stmt.else_block = build_ast_else_stmt();
     }
     
-    debug("\nExit: build_ast_if_stmt");
+    debug("Exit: build_ast_if_stmt");
     return stmt;
 }
 
 AstNodeBlock* build_ast_else_stmt(void) {
-    debug("\nEntry: build_ast_else_stmt");
+    debug("Entry: build_ast_else_stmt");
     Token* token = peekToken();
 
-    debug("\n 2 else aquiii\n");
+    debug(" 2 else aquiii");
     if (token == NULL) return NULL;
 
     // consumeToken();
@@ -249,13 +249,13 @@ AstNodeBlock* build_ast_else_stmt(void) {
 
     verifyTokenAndWalk("}");
 
-    debug("\nExit: build_ast_else_stmt");
+    debug("Exit: build_ast_else_stmt");
 
     return block;
 }
 
 AstNodeStmt* build_ast_while_stmt(void) {
-    debug("\nEntry: build_ast_while_stmt");
+    debug("Entry: build_ast_while_stmt");
     consumeToken(); // Consome o 'while'
     verifyTokenAndWalk("(");
 
@@ -295,7 +295,7 @@ AstNodeStmt* build_ast_while_stmt(void) {
 
     verifyTokenAndWalk("}");
 
-    debug("\nExit: build_ast_while_stmt");
+    debug("Exit: build_ast_while_stmt");
 
     return stmt;
 }
@@ -420,13 +420,13 @@ AstNodeStmt* build_ast_define_function_stmt(void) {
 }
 
 AstNodeStmt* build_ast_return(void) {
-    debug("\nEntry: build_ast_return");
+    debug("Entry: build_ast_return");
 
     consumeNode();
     Node* node = peekNode();
     Token* token = node->value;
 
-    debug("\n build_ast_return token: %s \n", token->value);
+    debug(" build_ast_return token: %s ", token->value);
 
     AstNodeStmt* stmt = (AstNodeStmt*) malloc(sizeof(AstNodeStmt));
     stmt->type = STMT_RETURN;
@@ -434,7 +434,7 @@ AstNodeStmt* build_ast_return(void) {
     return_stmt->return_type = TYPE_VOID;
 
     if(strcmp(token->value, ";") == 0) {
-        debug("\nExit: build_ast_return NULL");
+        debug("Exit: build_ast_return NULL");
         consumeToken();
         stmt->as.return_stmt = *return_stmt;
         return stmt;
@@ -442,7 +442,7 @@ AstNodeStmt* build_ast_return(void) {
 
     char* errorMensage = "Waiting for a function call, an operation between two terms or a literal value.";
 
-    debug("\n build_ast_return node: %s \n", node->value->value);
+    debug(" build_ast_return node: %s ", node->value->value);
         
     if (node == NULL) throwError(errorMensage, 0);
     if (node->prev == NULL) throwError(errorMensage, 0);
@@ -470,13 +470,15 @@ AstNodeStmt* build_ast_return(void) {
     }
 
     free(return_stmt);
-    Token* t = consumeToken();
-    debug("\nExit: build_ast_return -> %s", t->value); 
+    Token* t = peekToken();
+    debug("Exit: build_ast_return -> %s", t->value); 
+    if(strcmp(t->value, ")") == 0) consumeToken();
+    verifySemiColon();
     return stmt;
 }
 
 AstNodeStmt* build_ast_call_function_stmt(void) {
-    debug("\nEntry: build_ast_call_function_stmt");
+    debug("Entry: build_ast_call_function_stmt");
     Node* node = peekNode();
     if (node == NULL) return NULL;
     if (node->prev == NULL) return NULL;
@@ -501,7 +503,7 @@ AstNodeStmt* build_ast_call_function_stmt(void) {
     AstNodeArgFunction* current_arg = (AstNodeArgFunction*) malloc(sizeof(AstNodeArgFunction));
 
     Token* token = peekToken();
-    debug("\n first arg: %s\n", token->value);
+    debug(" first arg: %s", token->value);
     char* valid_tokens[] = {",", ")"};
     while(strcmp(token->value, ")") != 0) {
         AstNodeArgFunction* arg = build_ast_arg_function();
@@ -527,16 +529,16 @@ AstNodeStmt* build_ast_call_function_stmt(void) {
     }
 
     // Token* t = peekToken();
-    // debug("\n------------- build_ast_call_function_stmt: %s", t->value);
+    // debug("------------- build_ast_call_function_stmt: %s", t->value);
     // t = consumeToken();
-    // debug("\n------------- build_ast_call_function_stmt: %s", t->value);
-    // debug("\nExit: build_ast_call_function_stmt");
+    // debug("------------- build_ast_call_function_stmt: %s", t->value);
+    // debug("Exit: build_ast_call_function_stmt");
     return stmt;
 
 }
 
 AstNodeArgFunction* build_ast_arg_function(void) {
-    debug("\nEntry: build_ast_arg_function");
+    debug("Entry: build_ast_arg_function");
     Token* token = peekToken();
     if(token == NULL) return NULL;
 
@@ -544,12 +546,12 @@ AstNodeArgFunction* build_ast_arg_function(void) {
     arg->next = NULL;
     arg->expr = build_ast_expr();
 
-    debug("\nExit: build_ast_arg_function");
+    debug("Exit: build_ast_arg_function");
     return arg;
 }
 
 AstNodeParamFunction* build_ast_param_function(void) {
-    debug("\nEntry: build_ast_param_function");
+    debug("Entry: build_ast_param_function");
     Token* token = peekToken();
     if(token == NULL) return NULL;
 
@@ -577,12 +579,12 @@ AstNodeParamFunction* build_ast_param_function(void) {
 
     param->var_name = strdup(token->value);
 
-    debug("\nExit: build_ast_param_function");
+    debug("Exit: build_ast_param_function");
     return param;
 }
 
 AstNodeStmt* build_ast_assignment(void) {
-    debug("\nEntry: build_ast_assignment");
+    debug("Entry: build_ast_assignment");
     Token* token = peekToken();
     if (token == NULL) return NULL;
     
@@ -620,32 +622,32 @@ AstNodeStmt* build_ast_assignment(void) {
     // 4. Processa a EXPRESSÃO completa
     stmt->as.assignment.value = build_ast_expr();
 
-    debug("\nExit: build_ast_assignment");
+    debug("Exit: build_ast_assignment");
     return stmt;
 }
 
 AstNodeExpr* build_ast_primary(void) {
-    debug("\nEntry: build_ast_primary");
+    debug("Entry: build_ast_primary");
     Token* token = peekToken();
 
     if (token == NULL) return NULL;
 
 
     if (token->type == LITERAL) {
-        debug("\nExit: 1 build_ast_primary");
+        debug("Exit: 1 build_ast_primary");
         return build_ast_literal();
     } 
     else if (token->type == IDENTIFIER) {
-        debug("\nExit: 2 build_ast_primary");
+        debug("Exit: 2 build_ast_primary");
         return build_ast_variable();
     }
 
-    debug("\nExit: 3 build_ast_primary");
+    debug("Exit: 3 build_ast_primary");
     return NULL;
 }
 
 AstNodeExpr* build_ast_literal(void) {
-    debug("\nEntry: build_ast_literal");
+    debug("Entry: build_ast_literal");
     Token* token = peekToken();
     if (token == NULL) return NULL;
 
@@ -662,12 +664,12 @@ AstNodeExpr* build_ast_literal(void) {
     }
 
     consumeToken();
-    debug("\nExit: build_ast_literal");
+    debug("Exit: build_ast_literal");
     return expr;
 }
 
 AstNodeExpr* build_ast_variable(void) {
-    debug("\nEntry: build_ast_variable");
+    debug("Entry: build_ast_variable");
     Token* token = peekToken();
     if (token == NULL) return NULL;
 
@@ -676,12 +678,12 @@ AstNodeExpr* build_ast_variable(void) {
     expr->as.variable.name = strdup(token->value);
 
     consumeToken();
-    debug("\nExit: build_ast_variable");
+    debug("Exit: build_ast_variable");
     return expr;
 }
 
 AstNodeExpr* build_ast_expr(void) {
-    debug("\nEntry: build_ast_expr");
+    debug("Entry: build_ast_expr");
     AstNodeExpr* left = build_ast_primary();
     if (left == NULL) return NULL;
 
@@ -699,6 +701,6 @@ AstNodeExpr* build_ast_expr(void) {
         return binary_expr;
     }
 
-    debug("\nExit: build_ast_expr");
+    debug("Exit: build_ast_expr");
     return left;
 }

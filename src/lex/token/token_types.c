@@ -7,6 +7,7 @@
 
 #include "util/util.h"
 #include "lex/token_types.h"
+#include "lex/lex.h"
 
 // KEYWORD
 char* keywords[] = {
@@ -43,6 +44,18 @@ char* operators[] = {
      "+", "-", "*", "/", "^", "<", ">", 
      "!","&&", "||"
 };
+
+bool isTwoCharOperator(Lex* l) {
+    if(l->char_index + 1 >= l->expr_length) return false;
+
+    char text[3] = { l->expr[l->char_index], l->expr[l->char_index + 1], '\0' };
+    return isOperator(text);
+}
+
+bool isOperatorChar(char c) {
+    char text[2] = { c, '\0' };
+    return isOperator(text);
+}
 
 bool isOperator(char* text) {
     return inStringArray(operators, ARRAY_SIZE(operators), text);

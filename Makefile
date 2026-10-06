@@ -1,15 +1,5 @@
 all: 
-	gcc -g -I src/headers \
-      src/main.c \
-      src/lex/lex.c \
-      src/lex/queue.c \
-      src/lex/token/token.c \
-      src/lex/token/token_types.c \
-      src/sem/sem.c \
-      src/sem/sem_types.c \
-      src/util/file_reader.c \
-      src/util/utils.c \
-      -o output/main
+	gcc -g -I src/headers src/*/*.c -o output/main
 
 ARG := $(word 2, $(MAKECMDGOALS))
 FLAG := $(word 3, $(MAKECMDGOALS))
@@ -48,3 +38,5 @@ else
 	@echo "Inválid option"
 	@echo "Try: make test <name_of_test>"
 endif
+
+# gcc -g -fsanitize=address -I src/headers src/main.c src/lex/*.c src/lex/token/*.c src/sem/*.c src/util/*.c -o output/main_asan

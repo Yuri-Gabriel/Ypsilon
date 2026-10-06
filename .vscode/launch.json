@@ -2,17 +2,18 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug C (WSL)",
+            "name": "Debug Ypsilon (escolher sample)",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/output/main",
-            "args": ["samples/define_function.y"],
+            "args": ["samples/${input:sample}"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
-            "console": "integratedTerminal",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "preLaunchTask": "build",
             "setupCommands": [
                 {
                     "description": "Enable pretty-printing for gdb",
@@ -25,6 +26,47 @@
                     "ignoreFailures": true
                 }
             ]
+        },
+        {
+            "name": "Debug Ypsilon (sample + -dbg)",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/output/main",
+            "args": ["samples/${input:sample}", "-dbg"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "preLaunchTask": "build",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Disable debuginfod",
+                    "text": "set debuginfod enabled off",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ],
+    "inputs": [
+        {
+            "id": "sample",
+            "type": "pickString",
+            "description": "Arquivo de samples/ para executar",
+            "options": [
+                "define_function.y",
+                "call_function.y",
+                "variable.y",
+                "if.y",
+                "while.y"
+            ],
+            "default": "define_function.y"
         }
     ]
 }

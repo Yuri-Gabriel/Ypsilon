@@ -3,7 +3,6 @@
 #include <stdbool.h>
 #include <string.h>
 #include <ctype.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -132,9 +131,21 @@ bool endsWith(const char* text, const char* suffix) {
     ) == 0;
 }
 
-void throwError(char* message, int code) {
-    printf("\nError: %s", message);
-    printf("\nError code: %d\n", code);
-    exit(0);
+void str_concat(char* str_start, char* str_end) {
+    int size = strlen(str_start) + strlen(str_end) + 1;
+
+    char* buff = (char*) malloc(size * sizeof(char));
+
+    if (buff == NULL) {
+        printf("Erro ao alocar memória!\n");
+        exit(1);
+    }
+
+    strcpy(buff, str_start);
+    strcat(buff, str_end);
+
+    str_start = buff;
+
+    free(buff); 
 }
 

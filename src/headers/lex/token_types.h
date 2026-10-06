@@ -2,6 +2,7 @@
 #define TOKEN_TYPES_H
 
 #include <stdbool.h>
+#include "lex/lex.h"
 
 #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
 
@@ -16,6 +17,8 @@
 bool isKeyword(char* text);
 bool isIdentifier(const char* buff);
 bool isOperator(char* text);
+bool isOperatorChar(char c);
+bool isTwoCharOperator(Lex* l);
 bool isLiteral(const char *str);
 bool isPunctuator(char text);
 bool isType(char* text);

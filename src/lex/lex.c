@@ -9,17 +9,10 @@
 #include "lex/token.h"
 #include "lex/token_types.h"
 #include "lex/queue.h"
+#include "lex/lex.h"
 
 #include "util/util.h"
-
-typedef struct {
-    Queue* tokens;
-
-    unsigned long expr_length;
-    unsigned long char_index;
-
-    char* expr;
-} Lex;
+#include "util/error.h"
 
 char peek(Lex* l) {
     return l->expr[l->char_index];
@@ -50,33 +43,29 @@ Queue* tokenize(char* expr_str) {
             continue;
         }
 
-        // --- NOVA LÓGICA: Captura de Strings Literais ---
         if (current_character == '"') {
-            buff[buff_index++] = consume(lex); // Consome a aspa de abertura
+            buff[buff_index++] = consume(lex);
 
             while (lex->char_index < lex->expr_length) {
                 current_character = peek(lex);
                 buff[buff_index++] = consume(lex);
 
-                // Se encontrar a aspa de fechamento, termina a string
+                
                 if (current_character == '"') {
                     break;
                 }
             }
-        } 
-        // --- FIM DA NOVA LÓGICA ---
-        
-        // Mantém a lógica existente para Operadores e Pontuadores
-        else if(isOperator(&current_character) || isPunctuator(current_character)) {
+        } else if(isTwoCharOperator(lex)) {
             buff[buff_index++] = consume(lex);
-        } 
-        // Mantém a lógica existente para identificadores/números (sem aspas)
-        else {
+            buff[buff_index++] = consume(lex);
+        } else if(isOperatorChar(current_character) || isPunctuator(current_character)) {
+            buff[buff_index++] = consume(lex);
+        } else {
             while(lex->char_index < lex->expr_length) {
                 current_character = peek(lex);
 
                 if(isEmpty(current_character)
-                    || isOperator(&current_character)
+                    || isOperatorChar(current_character)
                     || isPunctuator(current_character)
                     || current_character == ','
                 ) {
@@ -94,9 +83,7 @@ Queue* tokenize(char* expr_str) {
         char type = getType(buff);
 
         if(type == UNKNOWN) {
-            char message[0x200];
-            sprintf(message, "Unidentified token '%s'", buff);
-            throwError(message, 0);
+            throwError(ERROR_UNDEFINED_TOKEN, ERRORS_TEXT[ERROR_UNDEFINED_TOKEN], buff);
         }
 
         Token* token = create_token(buff, type);

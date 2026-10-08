@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "util/util.h"
+#include "util/error.h"
 #include "lex/queue.h"
 #include "lex/token_types.h"
 #include "sem/sem_types.h"
@@ -69,9 +70,11 @@ void verifyTokenAndWalk(char* token_str) {
     Token* token = peekToken();
     //debug("[verifyTokenAndWalk] Token value: %s | value verified: %s", token->value, token_str);
     if (token == NULL || strcmp(token->value, token_str) != 0) {
-        char message[0x100];
-        snprintf(message, sizeof(message), "Missing '%s'", token_str);
-        throwError(message, 0);
+        throwError(
+            ERROR_MISSING_TOKEN, 
+            ERRORS_TEXT[ERROR_MISSING_TOKEN], 
+            token_str
+        );
     }
     consumeToken();
     debug("Exit: verifyTokenAndWalk");
@@ -304,12 +307,19 @@ AstNodeStmt* build_ast_define_function_stmt(void) {
     Token* token = consumeToken();
 
     if(token == NULL || strcmp(token->value, "function") != 0) {
-        throwError("Expected 'function' keyword", 0);
+        throwError(
+            ERROR_EXPECTED_KEYWORD, 
+            ERRORS_TEXT[ERROR_EXPECTED_KEYWORD], 
+            "function"
+        );
     }
 
     token = peekToken();
     if(token == NULL || token->type != IDENTIFIER) {
-        throwError("Expected function name after 'function' keyword", 0);
+        throwError(
+            ERROR_EXPECTED_FUNCTION_NAME, 
+            ERRORS_TEXT[ERROR_EXPECTED_FUNCTION_NAME]
+        );
     }
 
     AstNodeStmt* stmt = (AstNodeStmt*) malloc(sizeof(AstNodeStmt));
@@ -355,7 +365,11 @@ AstNodeStmt* build_ast_define_function_stmt(void) {
         token = peekToken();
 
         if(!inStringArray(valid_tokens, ARRAY_SIZE(valid_tokens), token->value)) {
-            throwError("Missing ')' or ','", 0);
+            throwError(
+                ERROR_MISSING_TOKEN, 
+                ERRORS_TEXT[ERROR_MISSING_TOKEN], 
+                "')' or ','"
+            );
         }
     }
 
@@ -365,7 +379,10 @@ AstNodeStmt* build_ast_define_function_stmt(void) {
     token = peekToken();
 
     if(token == NULL || token->type != TYPE) {
-        throwError("Expected return type after ':'", 0);
+        throwError(
+            ERROR_EXPECTED_RETURN_TYPE, 
+            ERRORS_TEXT[ERROR_EXPECTED_RETURN_TYPE]
+        );
     }
 
     if(strcmp(token->value, "void") == 0) {
@@ -377,7 +394,12 @@ AstNodeStmt* build_ast_define_function_stmt(void) {
     } else if(strcmp(token->value, "string") == 0) {
         def_function_stmt->return_type = TYPE_STRING;
     } else {
-        throwError("Invalid return type. Expected 'void', 'number', 'bool', or 'string'", 0);
+        throwError(
+            ERROR_INVALID_TYPE, 
+            ERRORS_TEXT[ERROR_INVALID_TYPE], 
+            "Invalid return type.", 
+            "'void', 'number', 'bool', or 'string'"
+        );
     }
 
     consumeToken();
@@ -440,17 +462,27 @@ AstNodeStmt* build_ast_return(void) {
         return stmt;
     }
 
-    char* errorMensage = "Waiting for a function call, an operation between two terms or a literal value.";
-
     debug(" build_ast_return node: %s ", node->value->value);
         
-    if (node == NULL) throwError(errorMensage, 0);
-    if (node->prev == NULL) throwError(errorMensage, 0);
-    if (node->prev->value == NULL) throwError(errorMensage, 0);
+    if (node == NULL) throwError(
+        ERROR_EXPECTED_VALID_RETURN, 
+        ERRORS_TEXT[ERROR_EXPECTED_VALID_RETURN]
+    );
+    if (node->prev == NULL) throwError(
+        ERROR_EXPECTED_VALID_RETURN, 
+        ERRORS_TEXT[ERROR_EXPECTED_VALID_RETURN]
+    );
+    if (node->prev->value == NULL) throwError(
+        ERROR_EXPECTED_VALID_RETURN, 
+        ERRORS_TEXT[ERROR_EXPECTED_VALID_RETURN]
+    );
 
     if(token->type == IDENTIFIER && strcmp(node->prev->value->value, "(") == 0) {
         AstNodeStmt* call_func_stmt = build_ast_call_function_stmt();
-        if(stmt == NULL) throwError(errorMensage, 0);
+        if(stmt == NULL) throwError(
+            ERROR_EXPECTED_VALID_RETURN, 
+            ERRORS_TEXT[ERROR_EXPECTED_VALID_RETURN]
+        );
         return_stmt->as.call = call_func_stmt->as.call_function_stmt;
         return_stmt->return_type = RETURN_TYPE_CALL;
         free(call_func_stmt);
@@ -461,7 +493,10 @@ AstNodeStmt* build_ast_return(void) {
         || node->prev->value->type == OPERATOR
     ) {
         AstNodeExpr* expr = build_ast_expr();
-        if(expr == NULL) throwError(errorMensage, 0);
+        if(expr == NULL) throwError(
+            ERROR_EXPECTED_VALID_RETURN, 
+            ERRORS_TEXT[ERROR_EXPECTED_VALID_RETURN]
+        );
         return_stmt->return_type = RETURN_TYPE_EXPR;
         
         return_stmt->as.expr = *expr;
@@ -524,15 +559,14 @@ AstNodeStmt* build_ast_call_function_stmt(void) {
         token = consumeToken();
 
         if(!inStringArray(valid_tokens, ARRAY_SIZE(valid_tokens), token->value)) {
-            throwError("Missing ')' or ','", 0);
+            throwError(
+                ERROR_MISSING_TOKEN, 
+                ERRORS_TEXT[ERROR_MISSING_TOKEN], 
+                "')' or ','"
+            );
         }
     }
 
-    // Token* t = peekToken();
-    // debug("------------- build_ast_call_function_stmt: %s", t->value);
-    // t = consumeToken();
-    // debug("------------- build_ast_call_function_stmt: %s", t->value);
-    // debug("Exit: build_ast_call_function_stmt");
     return stmt;
 
 }
@@ -556,7 +590,10 @@ AstNodeParamFunction* build_ast_param_function(void) {
     if(token == NULL) return NULL;
 
     if(token->type != TYPE) {
-        throwError("Expected type for function parameter", 0);
+        throwError(
+            ERROR_EXPECTED_PARAM_TYPE, 
+            ERRORS_TEXT[ERROR_EXPECTED_PARAM_TYPE]
+        );
     }
 
     AstNodeParamFunction* param = (AstNodeParamFunction*) malloc(sizeof(AstNodeParamFunction));
@@ -567,14 +604,22 @@ AstNodeParamFunction* build_ast_param_function(void) {
     } else if(strcmp(token->value, "bool") == 0) {
         param->var_type = TYPE_BOOL;
     } else {
-        throwError("Invalid type for function parameter. Expected 'string', 'number', or 'bool'", 0);
+        throwError(
+            ERROR_INVALID_TYPE, 
+            ERRORS_TEXT[ERROR_INVALID_TYPE], 
+            "Invalid type for function parameter.", 
+            "'number', 'bool', or 'string'"
+        );
     }
 
     consumeToken(); 
     token = peekToken();
 
     if(token == NULL || token->type != IDENTIFIER) {
-        throwError("Expected identifier for function parameter", 0);
+        throwError(
+            ERROR_EXPECTED_PARAM_NAME, 
+            ERRORS_TEXT[ERROR_EXPECTED_PARAM_NAME]
+        );
     }
 
     param->var_name = strdup(token->value);
@@ -594,7 +639,13 @@ AstNodeStmt* build_ast_assignment(void) {
 
     // 1. Processa o TIPO da variável (opcional em reatribuições)
     if (token->type == TYPE) {
-        if(strcmp(token->value, "void") == 0) throwError("Type 'void' in variables is not permitted.", 0);
+        if(strcmp(token->value, "void") == 0) {
+            throwError(
+                ERROR_INVALID_TYPE, 
+                ERRORS_TEXT[ERROR_INVALID_TYPE], 
+                "Type 'void' in variables is not permitted.", ""
+            );
+        }
         stmt->as.assignment.var_type = strdup(token->value);
         consumeToken();
         token = peekToken();
@@ -608,7 +659,10 @@ AstNodeStmt* build_ast_assignment(void) {
         consumeToken();
         token = peekToken();
     } else {
-        throwError("Esperado o nome da variável", 0);
+        throwError(
+            ERROR_EXPECTED_VAR_NAME, 
+            ERRORS_TEXT[ERROR_EXPECTED_VAR_NAME]
+        );
     }
 
     // 3. Processa o OPERADOR de atribuição (ex: "=", "+=")
@@ -616,7 +670,12 @@ AstNodeStmt* build_ast_assignment(void) {
         stmt->as.assignment.op = strdup(token->value);
         consumeToken();
     } else {
-        throwError("Esperado operador de atribuição", 0);
+        throwError(
+            ERROR_EXPECTED_OPERATOR, 
+            ERRORS_TEXT[ERROR_EXPECTED_OPERATOR], 
+            "", 
+            "'=', '+=', '-=', '*=', '/=' or '^='"
+        );
     }
 
     // 4. Processa a EXPRESSÃO completa

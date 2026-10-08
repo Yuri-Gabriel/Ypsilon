@@ -133,7 +133,6 @@ typedef struct {
     int stmts_count;
 } AstNodeProg;
 
-static void print_indent(int level);
 void printProg(AstNodeProg *prog);
 const char *stmtTypeToString(char type);
 void printBlock(AstNodeBlock *block, int level);

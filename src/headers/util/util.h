@@ -14,6 +14,5 @@ bool inCharArray(char array[], int arraySize, char value);
 bool inStringArray(char* array[], int arraySize, const char* value);
 bool startsWith(const char* text, const char* prefix);
 bool endsWith(const char* text, const char* suffix);
-void str_concat(char* str_start, char* str_end);
 
 #endif 

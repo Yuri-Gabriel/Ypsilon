@@ -7,9 +7,14 @@
 
 #include "util/file_reader.h"
 #include "util/util.h"
+#include "util/error.h"
 
 #include <stdio.h>
 #include <string.h>
+
+#include "util/util.h"
+#include "util/error.h"
+
 
 int main(int argc, char *argv[]) {
 

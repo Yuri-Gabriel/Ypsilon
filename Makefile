@@ -1,5 +1,21 @@
-all: 
-	gcc -g -I src/headers src/*/*.c -o output/main
+PROJ_NAME=ypsilon
+BUILD_DIR=output
+SRC := $(shell find src -name '*.c' | sort)
+TARGET=$(BUILD_DIR)/$(PROJ_NAME)
+
+CC=gcc
+CFLAGS=-Wall -Wextra -Werror -g -fdiagnostics-color=always -I ./src/headers
+LDFLAGS=-lm
+
+ALL_DEPS := $(shell find src src/headers -type f \( -name '*.c' -o -name '*.h' \) | sort)
+
+all: $(TARGET)
+
+$(BUILD_DIR):
+	mkdir -p $(BUILD_DIR)
+
+$(TARGET): $(SRC) $(ALL_DEPS) | $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(SRC) -o $(TARGET) $(LDFLAGS)
 
 ARG := $(word 2, $(MAKECMDGOALS))
 FLAG := $(word 3, $(MAKECMDGOALS))
@@ -19,7 +35,7 @@ endif
 
 define exec
 	@echo "=> Iniciando teste em: $(1)" 
-	make && output/main samples/$(1) $(DBG_FLAG)
+	$(MAKE) && $(TARGET) samples/$(1) $(DBG_FLAG)
 	@echo "=> Teste finalizando em: $(1)" 
 endef
 
@@ -39,4 +55,3 @@ else
 	@echo "Try: make test <name_of_test>"
 endif
 
-# gcc -g -fsanitize=address -I src/headers src/main.c src/lex/*.c src/lex/token/*.c src/sem/*.c src/util/*.c -o output/main_asan

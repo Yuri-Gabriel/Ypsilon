@@ -6,6 +6,7 @@
 #include "lex/token.h"
 #include "lex/token_types.h"
 #include "lex/queue.h"
+#include "util/util.h"
 
 Node* create_node(Token* value) {
     Node* node = (Node*) malloc(sizeof(Node));
@@ -69,6 +70,7 @@ int size(Queue* queue) {
 }
 
 void forEach(Queue* queue, void (*func)(Node* node)) {
+    if(DEBUG_ON == 0) return;
     Node* current = queue->first;
 
     while(current != NULL) {

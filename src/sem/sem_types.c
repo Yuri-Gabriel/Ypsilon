@@ -1,5 +1,6 @@
 
 #include "sem/sem_types.h"
+#include "util/util.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,6 +11,7 @@ static void print_indent(int level) {
 }
 
 void printProg(AstNodeProg *prog) {
+    if(DEBUG_ON == 0) return;
     if (!prog) {
         printf("AstNodeProg: NULL\n");
         return;

@@ -30,6 +30,7 @@ Queue* tokenize(char* expr_str) {
 
     lex->expr_length = strlen(lex->expr);
     lex->char_index = 0;
+    int line = 1;
 
     while(lex->char_index < lex->expr_length) {
 
@@ -37,6 +38,10 @@ Queue* tokenize(char* expr_str) {
         int buff_index = 0;
 
         char current_character = peek(lex);
+        if(current_character == 0xA) {
+            line++;
+        }
+        
 
         if(isEmpty(current_character)) {
             consume(lex);
@@ -83,12 +88,19 @@ Queue* tokenize(char* expr_str) {
         char type = getType(buff);
 
         if(type == UNKNOWN) {
-            throwError(ERROR_UNDEFINED_TOKEN, ERRORS_TEXT[ERROR_UNDEFINED_TOKEN], buff);
+            throwError(
+                ERROR_UNDEFINED_TOKEN, 
+                line, 
+                ERRORS_TEXT[ERROR_UNDEFINED_TOKEN], 
+                buff
+            );
         }
 
-        Token* token = create_token(buff, type);
+        Token* token = create_token(buff, type, line);
         push(lex->tokens, token);
     }
 
     return lex->tokens;
 }
+
+

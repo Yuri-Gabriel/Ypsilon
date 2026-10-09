@@ -21,12 +21,13 @@ char* ERRORS_TEXT[] = {
     "Expected for a function call, an operation between two terms or a literal value."
 };
 
-void throwError(__uint8_t error_code, const char *__restrict__ __format, ...) {
+void throwError(int error_code, unsigned int line, const char *__restrict__ __format, ...) {
     va_list args;
     va_start(args, __format);
-    printf("\nError: ");
+    printf("\n\e[31mError on line %d", line);
+    printf("\nMessage: ");
     vprintf(__format, args);
-    printf("\nError code: %d\n", error_code);
+    printf("\nCode: %d\n\e[0m", error_code);
     va_end(args);
     exit(1);
 }

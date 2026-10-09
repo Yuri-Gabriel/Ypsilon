@@ -5,7 +5,7 @@
 
 #include "lex/token.h"
 
-Token* create_token(char* value, unsigned char type) {
+Token* create_token(char* value, unsigned char type, unsigned int line) {
 
     if(value == NULL) {
         return NULL;
@@ -16,6 +16,7 @@ Token* create_token(char* value, unsigned char type) {
     token->value = malloc(strlen(value) + 1);
     strcpy(token->value, value);
     token->type = type;
+    token->line = line;
 
     return token;
 }

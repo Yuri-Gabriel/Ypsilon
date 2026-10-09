@@ -1,5 +1,7 @@
 
-#include "lex/lex.h"
+#include <stdio.h>
+#include <string.h>
+
 #include "lex/lex.h"
 #include "lex/queue.h"
 #include "sem/sem_types.h"
@@ -8,9 +10,6 @@
 #include "util/file_reader.h"
 #include "util/util.h"
 #include "util/error.h"
-
-#include <stdio.h>
-#include <string.h>
 
 #include "util/util.h"
 #include "util/error.h"
@@ -34,6 +33,9 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
+    // printf("%s", content);
+    // return 0;
+
     Queue* tokens = tokenize(content);
     forEach(tokens, printTokens);
     AstNodeProg* prog = analyze(tokens);
@@ -41,3 +43,5 @@ int main(int argc, char *argv[]) {
 
     return 0;
 }
+
+

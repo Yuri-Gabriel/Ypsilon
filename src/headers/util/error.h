@@ -17,6 +17,6 @@
 
 extern char* ERRORS_TEXT[];
 
-void throwError(__uint8_t error_code, const char *__restrict__ __format, ...);
+void throwError(int error_code, unsigned int line, const char *__restrict__ __format, ...);
 
 #endif 

@@ -72,6 +72,7 @@ void verifyTokenAndWalk(char* token_str) {
     if (token == NULL || strcmp(token->value, token_str) != 0) {
         throwError(
             ERROR_MISSING_TOKEN, 
+            token->line,
             ERRORS_TEXT[ERROR_MISSING_TOKEN], 
             token_str
         );
@@ -309,6 +310,7 @@ AstNodeStmt* build_ast_define_function_stmt(void) {
     if(token == NULL || strcmp(token->value, "function") != 0) {
         throwError(
             ERROR_EXPECTED_KEYWORD, 
+            token->line,
             ERRORS_TEXT[ERROR_EXPECTED_KEYWORD], 
             "function"
         );
@@ -318,6 +320,7 @@ AstNodeStmt* build_ast_define_function_stmt(void) {
     if(token == NULL || token->type != IDENTIFIER) {
         throwError(
             ERROR_EXPECTED_FUNCTION_NAME, 
+            token->line,
             ERRORS_TEXT[ERROR_EXPECTED_FUNCTION_NAME]
         );
     }
@@ -367,6 +370,7 @@ AstNodeStmt* build_ast_define_function_stmt(void) {
         if(!inStringArray(valid_tokens, ARRAY_SIZE(valid_tokens), token->value)) {
             throwError(
                 ERROR_MISSING_TOKEN, 
+                token->line,
                 ERRORS_TEXT[ERROR_MISSING_TOKEN], 
                 "')' or ','"
             );
@@ -381,6 +385,7 @@ AstNodeStmt* build_ast_define_function_stmt(void) {
     if(token == NULL || token->type != TYPE) {
         throwError(
             ERROR_EXPECTED_RETURN_TYPE, 
+            token->line,
             ERRORS_TEXT[ERROR_EXPECTED_RETURN_TYPE]
         );
     }
@@ -396,6 +401,7 @@ AstNodeStmt* build_ast_define_function_stmt(void) {
     } else {
         throwError(
             ERROR_INVALID_TYPE, 
+            token->line,
             ERRORS_TEXT[ERROR_INVALID_TYPE], 
             "Invalid return type.", 
             "'void', 'number', 'bool', or 'string'"
@@ -466,14 +472,17 @@ AstNodeStmt* build_ast_return(void) {
         
     if (node == NULL) throwError(
         ERROR_EXPECTED_VALID_RETURN, 
+        token->line,
         ERRORS_TEXT[ERROR_EXPECTED_VALID_RETURN]
     );
     if (node->prev == NULL) throwError(
         ERROR_EXPECTED_VALID_RETURN, 
+        token->line,
         ERRORS_TEXT[ERROR_EXPECTED_VALID_RETURN]
     );
     if (node->prev->value == NULL) throwError(
         ERROR_EXPECTED_VALID_RETURN, 
+        token->line,
         ERRORS_TEXT[ERROR_EXPECTED_VALID_RETURN]
     );
 
@@ -481,6 +490,7 @@ AstNodeStmt* build_ast_return(void) {
         AstNodeStmt* call_func_stmt = build_ast_call_function_stmt();
         if(stmt == NULL) throwError(
             ERROR_EXPECTED_VALID_RETURN, 
+            token->line,
             ERRORS_TEXT[ERROR_EXPECTED_VALID_RETURN]
         );
         return_stmt->as.call = call_func_stmt->as.call_function_stmt;
@@ -495,6 +505,7 @@ AstNodeStmt* build_ast_return(void) {
         AstNodeExpr* expr = build_ast_expr();
         if(expr == NULL) throwError(
             ERROR_EXPECTED_VALID_RETURN, 
+            token->line,
             ERRORS_TEXT[ERROR_EXPECTED_VALID_RETURN]
         );
         return_stmt->return_type = RETURN_TYPE_EXPR;
@@ -561,6 +572,7 @@ AstNodeStmt* build_ast_call_function_stmt(void) {
         if(!inStringArray(valid_tokens, ARRAY_SIZE(valid_tokens), token->value)) {
             throwError(
                 ERROR_MISSING_TOKEN, 
+                token->line,
                 ERRORS_TEXT[ERROR_MISSING_TOKEN], 
                 "')' or ','"
             );
@@ -592,6 +604,7 @@ AstNodeParamFunction* build_ast_param_function(void) {
     if(token->type != TYPE) {
         throwError(
             ERROR_EXPECTED_PARAM_TYPE, 
+            token->line,    
             ERRORS_TEXT[ERROR_EXPECTED_PARAM_TYPE]
         );
     }
@@ -606,6 +619,7 @@ AstNodeParamFunction* build_ast_param_function(void) {
     } else {
         throwError(
             ERROR_INVALID_TYPE, 
+            token->line,
             ERRORS_TEXT[ERROR_INVALID_TYPE], 
             "Invalid type for function parameter.", 
             "'number', 'bool', or 'string'"
@@ -617,7 +631,8 @@ AstNodeParamFunction* build_ast_param_function(void) {
 
     if(token == NULL || token->type != IDENTIFIER) {
         throwError(
-            ERROR_EXPECTED_PARAM_NAME, 
+            ERROR_EXPECTED_PARAM_NAME,
+            token->line, 
             ERRORS_TEXT[ERROR_EXPECTED_PARAM_NAME]
         );
     }
@@ -642,6 +657,7 @@ AstNodeStmt* build_ast_assignment(void) {
         if(strcmp(token->value, "void") == 0) {
             throwError(
                 ERROR_INVALID_TYPE, 
+                token->line,
                 ERRORS_TEXT[ERROR_INVALID_TYPE], 
                 "Type 'void' in variables is not permitted.", ""
             );
@@ -661,6 +677,7 @@ AstNodeStmt* build_ast_assignment(void) {
     } else {
         throwError(
             ERROR_EXPECTED_VAR_NAME, 
+            token->line,
             ERRORS_TEXT[ERROR_EXPECTED_VAR_NAME]
         );
     }
@@ -672,6 +689,7 @@ AstNodeStmt* build_ast_assignment(void) {
     } else {
         throwError(
             ERROR_EXPECTED_OPERATOR, 
+            token->line,
             ERRORS_TEXT[ERROR_EXPECTED_OPERATOR], 
             "", 
             "'=', '+=', '-=', '*=', '/=' or '^='"
